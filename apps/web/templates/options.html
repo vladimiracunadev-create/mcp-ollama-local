@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Opciones MCP</title>
+  <style>
+    body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; background:#0b0f19; color:#e6e8ee; margin:0; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px; }
+    .card { background:#121a2b; border:1px solid #24314f; border-radius:14px; padding:18px; margin:14px 0; }
+    select, textarea { width:100%; border-radius:12px; border:1px solid #24314f; background:#0d1426; color:#e6e8ee; padding:12px; font-size:14px; }
+    .btn { background:#2b6cff; color:white; padding:12px 14px; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
+    pre { white-space: pre-wrap; background:#0d1426; padding:12px; border-radius:12px; border:1px solid #24314f; }
+    a { color:#9bbcff; text-decoration:none; }
+    .muted { color:#a9b2c7; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="/">← Inicio</a>
+
+    <div class="card">
+      <h2>Opciones (MCP directo)</h2>
+      <p class="muted">
+        Aquí NO usas el modelo. Ejecutas herramientas MCP directamente (seguro, solo en <code>data/sandbox</code>).
+      </p>
+
+      <label>Tool</label>
+      <select id="tool">
+        <option value="system_info">system_info (diagnóstico)</option>
+        <option value="list_files">list_files (listar sandbox)</option>
+        <option value="grep_text">grep_text (buscar texto)</option>
+      </select>
+
+      <br/><br/>
+      <label>Args (JSON)</label>
+      <textarea id="args" rows="6">{}</textarea>
+
+      <br/><br/>
+      <button class="btn" id="go">Ejecutar</button>
+    </div>
+
+    <div class="card">
+      <h3>Resultado</h3>
+      <pre id="out">(aquí verás el resultado)</pre>
+      <p class="muted">Ejemplos de args:</p>
+      <ul class="muted">
+        <li><code>{"rel_dir":"."}</code> para <b>list_files</b></li>
+        <li><code>{"needle":"hola","rel_dir":"."}</code> para <b>grep_text</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const out = document.getElementById('out');
+
+    async function postMCP(tool, args){
+      const r = await fetch('/api/mcp', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({tool, args})
+      });
+      const j = await r.json();
+      return j;
+    }
+
+    document.getElementById('go').addEventListener('click', async () => {
+      const tool = document.getElementById('tool').value;
+      let args = {};
+      try { args = JSON.parse(document.getElementById('args').value || "{}"); }
+      catch(e){ args = {}; }
+
+      out.textContent = "Procesando...";
+      try{
+        const j = await postMCP(tool, args);
+        out.textContent = JSON.stringify(j, null, 2);
+      }catch(e){
+        out.textContent = "ERROR: " + e;
+      }
+    });
+  </script>
+</body>
+</html>

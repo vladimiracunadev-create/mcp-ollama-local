@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+.env
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Local data (no versionar)
+data/chat_history.sqlite
+data/*.sqlite
+data/sandbox/*
+!data/sandbox/.gitkeep
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Misc
+*.tmp
+
+

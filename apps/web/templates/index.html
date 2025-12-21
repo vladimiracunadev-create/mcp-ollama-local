@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MCP + IA Local (Ollama) - ORICO</title>
+  <style>
+    :root{
+      --bg:#0b0f19;
+      --panel:#121a2b;
+      --panel2:#0d1426;
+      --border:#24314f;
+      --text:#e6e8ee;
+      --muted:#a9b2c7;
+      --blue:#2b6cff;
+      --green:#1d6b33;
+      --greenBg:#103a1b;
+      --red:#6b1d1d;
+      --redBg:#3a1010;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(43,108,255,.25), transparent 60%),
+                  radial-gradient(1200px 600px at 80% 20%, rgba(155,245,178,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    .hero{
+      padding: 18px 0 8px;
+    }
+    .hero h1{
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: .2px;
+    }
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      max-width: 920px;
+    }
+    .card{
+      background: rgba(18,26,43,.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin: 14px 0;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      background: var(--blue);
+      color:white;
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-decoration:none;
+      font-weight: 750;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .btn.secondary{
+      background: #24314f;
+      color: var(--text);
+    }
+    .btn.ghost{
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .pill{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      border: 1px solid transparent;
+      letter-spacing: .2px;
+    }
+    .ok{ background: var(--greenBg); color:#9bf5b2; border-color: var(--green); }
+    .bad{ background: var(--redBg); color:#ffb3b3; border-color: var(--red); }
+    .muted{ color: var(--muted); }
+    code{
+      background: var(--panel2);
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+    }
+    pre{
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 14px;
+      overflow:auto;
+      white-space: pre-wrap;
+      margin: 10px 0 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    h2{ margin: 0 0 10px; font-size: 18px; }
+    h3{ margin: 14px 0 8px; font-size: 15px; }
+    ul, ol{ margin: 8px 0 0 18px; color: var(--text); }
+    li{ margin: 6px 0; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 840px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+    .statusBox{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .statusLine{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(13,20,38,.75);
+    }
+    .statusKey{
+      min-width: 100px;
+      font-weight: 800;
+    }
+    .kbd{
+      display:inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(13,20,38,.9);
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .footer{
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>💻 MCP + IA Local (Ollama) en ORICO</h1>
+      <p>
+        Este proyecto te permite conversar con un <b>modelo local</b> (vía Ollama) desde una web.
+        Cuando hace falta, el modelo puede usar herramientas locales por <b>MCP</b> (de forma segura y acotada al sandbox).
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>✅ Estado del sistema</h2>
+      <div id="status" class="muted">Cargando estado...</div>
+
+      <div class="footer">
+        Si alguna parte queda en <span class="pill bad">ERROR</span>, el sistema puede abrir páginas pero no responder.
+        Esta sección te dice qué componente está fallando.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🚀 Accesos principales</h2>
+      <div class="row">
+        <a class="btn" href="/chat">Abrir Chat</a>
+        <a class="btn secondary" href="/options">Opciones (Tools MCP)</a>
+        <a class="btn ghost" href="/history">Historial (SQLite)</a>
+      </div>
+
+      <p class="muted" style="margin-top:12px">
+        <b>Chat</b>: conversación normal (ej. “hola”). El backend llama al modelo y te devuelve la respuesta.<br/>
+        <b>Opciones</b>: ejecuta tools MCP directo (<code>system_info</code>, <code>list_files</code>, <code>grep_text</code>) sin pasar por el modelo.<br/>
+        <b>Historial</b>: muestra lo guardado en <code>data/chat_history.sqlite</code>.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>📌 ¿Dónde veo la respuesta?</h2>
+        <ul>
+          <li><b>En la web</b>: en <code>/chat</code> aparece debajo del botón, en “Respuesta”.</li>
+          <li><b>En el terminal del servidor</b>: verás logs como <code>POST /api/chat 200</code>.</li>
+        </ul>
+
+        <h3>Si “escribo hola y no pasa nada”</h3>
+        <ul>
+          <li>Recarga duro el navegador: <span class="kbd">Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span></li>
+          <li>Mira el terminal: si NO aparece <code>POST /api/chat</code>, el navegador no está enviando la petición.</li>
+          <li>Prueba sin navegador (ver bloque de abajo). Si eso responde, el backend está OK.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>🧪 Prueba rápida (sin navegador)</h2>
+        <p class="muted">
+          Esto confirma que el backend + modelo están funcionando, sin depender de la UI.
+        </p>
+        <pre><code>curl -sS -X POST "http://localhost:8000/api/chat" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"hola"}'</code></pre>
+
+        <h3>Prueba tool MCP (sin IA)</h3>
+        <pre><code>curl -sS -X POST "http://localhost:8000/api/mcp" \
+  -H "Content-Type: application/json" \
+  -d '{"tool":"system_info","args":{}}'</code></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧠 Vincular este sistema a una IA local de texto y cómo cambiarla</h2>
+
+      <p class="muted">
+        Este sistema <b>no trae un modelo dentro</b>. Se conecta a un servidor local de IA.
+        Por defecto usa <b>Ollama</b> (texto) y un modelo como <code>qwen3:8b</code>.
+        La forma más simple de cambiar modelo/servidor es con variables de entorno (ideal: archivo <code>.env</code>).
+      </p>
+
+      <h3>✅ Opción recomendada: Ollama (lo que tienes ahora)</h3>
+      <ol>
+        <li>
+          Verifica que Ollama esté vivo:
+          <br/><code>curl http://localhost:11434/api/tags</code>
+        </li>
+        <li>
+          Descarga el modelo (ejemplo):
+          <br/><code>ollama pull qwen3:8b</code>
+        </li>
+        <li>
+          Define el modelo/URL que usa el sistema creando un archivo <code>.env</code> en la raíz del proyecto:
+          <pre><code>MODEL=qwen3:8b
+OLLAMA_URL=http://localhost:11434</code></pre>
+        </li>
+        <li>
+          Reinicia el servidor web (si estaba corriendo, primero Ctrl+C):
+          <br/><code>bash scripts/run_web.sh</code>
+        </li>
+      </ol>
+
+      <h3>🔁 Cambiar SOLO el modelo (sin tocar código)</h3>
+      <p class="muted">
+        Cambias <code>MODEL</code> en <code>.env</code> y reinicias el servidor.
+      </p>
+      <pre><code>ollama pull &lt;NOMBRE_MODELO&gt;
+# Edita .env:
+MODEL=&lt;NOMBRE_MODELO&gt;
+# Reinicia:
+bash scripts/run_web.sh</code></pre>
+
+      <h3>🔧 Cambiar a otra IA local que NO sea Ollama</h3>
+      <p class="muted">
+        Hoy el backend llama a Ollama usando el endpoint <code>/api/chat</code> del servidor de Ollama.
+        Si usas otra IA local (otro servidor), hay 2 escenarios:
+      </p>
+      <ol>
+        <li>
+          <b>Escenario “compatible”</b>: tu servidor expone el mismo formato/endpoint (o emula el de Ollama).
+          En ese caso solo cambias <code>OLLAMA_URL</code> en <code>.env</code>.
+        </li>
+        <li>
+          <b>Escenario “distinto”</b>: tu servidor usa otra API (por ejemplo, otro JSON u otro endpoint).
+          Entonces no cambias la UI ni MCP: solo cambias el “adaptador” HTTP del backend:
+          <br/>Archivo: <code>host/ollama_client.py</code>
+          <br/>Ahí se ajusta: <b>URL</b> + <b>payload</b> + lectura de la respuesta.
+        </li>
+      </ol>
+
+      <p class="muted">
+        En resumen: <b>la web y MCP quedan iguales</b>. Solo se cambia el “cliente” que habla con tu servidor de IA.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🧰 ¿Qué hace MCP aquí?</h2>
+      <p class="muted">
+        MCP expone herramientas locales seguras (no toca todo tu Mac). Este proyecto limita herramientas a:
+        <code>data/sandbox</code>. Ejemplos:
+      </p>
+      <ul>
+        <li><code>system_info</code>: diagnostica OS, python, rutas, espacio libre.</li>
+        <li><code>list_files</code>: lista archivos del sandbox.</li>
+        <li><code>grep_text</code>: busca texto dentro del sandbox.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      Ruta proyecto: <code>/Volumes/ORICO/LabMCP/mcp-ollama-local</code> • Sandbox: <code>data/sandbox</code>
+    </div>
+  </div>
+
+  <script>
+    async function getJSON(url){
+      const r = await fetch(url);
+      return r.json();
+    }
+    function pill(ok){
+      return `<span class="pill ${ok ? 'ok' : 'bad'}">${ok ? 'OK' : 'ERROR'}</span>`;
+    }
+
+    (async () => {
+      try{
+        const s = await getJSON('/api/health');
+        const html = `
+          <div class="statusBox">
+            <div class="statusLine">
+              <div class="statusKey">Web</div>
+              ${pill(!!s.web_ok)}
+              <span class="muted">Servidor FastAPI/Uvicorn</span>
+            </div>
+
+            <div class="statusLine">
+              <div class="statusKey">Ollama</div>
+              ${pill(!!s.ollama_ok)}
+              <span class="muted">${(s.ollama_detail || '')}</span>
+            </div>
+
+            <div class="statusLine">
+              <div class="statusKey">MCP</div>
+              ${pill(!!s.mcp_ok)}
+              <span class="muted">${(s.mcp_detail || '')}</span>
+            </div>
+          </div>
+        `;
+        document.getElementById('status').innerHTML = html;
+      }catch(e){
+        document.getElementById('status').innerHTML =
+          `${pill(false)} <span class="muted">No se pudo consultar /api/health: ${e}</span>`;
+      }
+    })();
+  </script>
+</body>
+</html>

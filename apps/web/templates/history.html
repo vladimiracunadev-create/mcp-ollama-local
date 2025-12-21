@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial (SQLite)</title>
+  <style>
+    body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; background:#0b0f19; color:#e6e8ee; margin:0; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px; }
+    .card { background:#121a2b; border:1px solid #24314f; border-radius:14px; padding:18px; margin:14px 0; }
+    input, select { border-radius:10px; border:1px solid #24314f; background:#0d1426; color:#e6e8ee; padding:10px; }
+    button { background:#2b6cff; color:white; padding:10px 12px; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
+    a { color:#9bbcff; text-decoration:none; }
+    .muted { color:#a9b2c7; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { text-align:left; padding:10px; border-bottom:1px solid #24314f; vertical-align: top; }
+    th { color:#cbd5f0; font-size:13px; }
+    td { font-size:13px; }
+    .role-user { color:#9bf5b2; font-weight:700; }
+    .role-assistant { color:#9bbcff; font-weight:700; }
+    pre { white-space: pre-wrap; margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row">
+      <a href="/">← Inicio</a>
+      <span class="muted">Historial guardado en SQLite</span>
+    </div>
+
+    <div class="card">
+      <h2>📜 Historial del Chat (SQLite)</h2>
+      <p class="muted">
+        Esta vista lee la base <code>data/chat_history.sqlite</code> y muestra los mensajes guardados.
+      </p>
+
+      <div class="row">
+        <label class="muted">Límite</label>
+        <input id="limit" type="number" min="10" max="1000" value="200" />
+
+        <label class="muted">Rol</label>
+        <select id="role">
+          <option value="">(todos)</option>
+          <option value="user">user</option>
+          <option value="assistant">assistant</option>
+        </select>
+
+        <label class="muted">Buscar</label>
+        <input id="q" type="text" placeholder="texto..." />
+
+        <button id="refresh">Actualizar</button>
+        <span id="stats" class="muted"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Resultados</h3>
+      <div id="out" class="muted">Cargando...</div>
+    </div>
+  </div>
+
+  <script>
+    function esc(s){
+      return (s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    }
+
+    async function load(){
+      const limit = document.getElementById('limit').value || 200;
+      const role = document.getElementById('role').value;
+      const q = document.getElementById('q').value;
+
+      const params = new URLSearchParams();
+      params.set("limit", limit);
+      if(role) params.set("role", role);
+      if(q) params.set("q", q);
+
+      const r = await fetch("/api/history?" + params.toString());
+      const j = await r.json();
+
+      const stats = document.getElementById('stats');
+      if(!j.ok){
+        stats.textContent = "ERROR: " + (j.error || "desconocido");
+        document.getElementById('out').textContent = "";
+        return;
+      }
+
+      stats.textContent = `Registros mostrados: ${j.items.length} | Total en BD: ${j.total}`;
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Rol</th>
+              <th>Contenido</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for(const it of j.items){
+        const roleClass = it.role === "user" ? "role-user" : (it.role === "assistant" ? "role-assistant" : "");
+        html += `
+          <tr>
+            <td>${it.id}</td>
+            <td>${esc(it.ts)}</td>
+            <td class="${roleClass}">${esc(it.role)}</td>
+            <td><pre>${esc(it.content)}</pre></td>
+          </tr>
+        `;
+      }
+
+      html += `</tbody></table>`;
+      document.getElementById('out').innerHTML = html;
+    }
+
+    document.getElementById('refresh').addEventListener('click', load);
+    load();
+  </script>
+</body>
+</html>

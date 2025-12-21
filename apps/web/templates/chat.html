@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat</title>
+  <style>
+    body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; background:#0b0f19; color:#e6e8ee; margin:0; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px; }
+    .card { background:#121a2b; border:1px solid #24314f; border-radius:14px; padding:18px; margin:14px 0; }
+    textarea { width:100%; border-radius:12px; border:1px solid #24314f; background:#0d1426; color:#e6e8ee; padding:12px; font-size:14px; }
+    .btn { background:#2b6cff; color:white; padding:12px 14px; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
+    pre { white-space: pre-wrap; background:#0d1426; padding:12px; border-radius:12px; border:1px solid #24314f; }
+    a { color:#9bbcff; text-decoration:none; }
+    .muted { color:#a9b2c7; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row">
+      <a href="/">← Inicio</a>
+      <span class="muted">Chat conversacional (modelo local vía Ollama)</span>
+    </div>
+
+    <div class="card">
+      <h2>Chat</h2>
+      <p class="muted">
+        Escribe un mensaje y presiona <b>Enviar</b>.
+        La respuesta aparece abajo en <b>Respuesta</b>.
+      </p>
+
+      <textarea id="msg" rows="5" placeholder="Ej: hola"></textarea><br/><br/>
+      <button class="btn" id="send">Enviar</button>
+      <span id="hint" class="muted"></span>
+    </div>
+
+    <div class="card">
+      <h3>Respuesta</h3>
+      <pre id="out">(aquí aparecerá la respuesta)</pre>
+      <p class="muted">
+        Si no aparece nada: mira el terminal del servidor.
+        Debes ver un log <code>POST /api/chat 200</code>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Ejemplos</h3>
+      <ul>
+        <li><code>hola</code></li>
+        <li><code>usa system_info y dime el espacio libre</code></li>
+        <li><code>lista archivos del sandbox</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const out = document.getElementById('out');
+    const hint = document.getElementById('hint');
+
+    async function postChat(message){
+      const r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({message})
+      });
+      const j = await r.json();
+      return j;
+    }
+
+    document.getElementById('send').addEventListener('click', async () => {
+      const message = document.getElementById('msg').value.trim();
+      if(!message){ return; }
+
+      hint.textContent = " (procesando...)";
+      out.textContent = "Procesando...";
+      try{
+        const j = await postChat(message);
+        if(j.ok){
+          out.textContent = j.answer;
+        }else{
+          out.textContent = "ERROR: " + (j.error || "desconocido");
+        }
+      }catch(e){
+        out.textContent = "ERROR de red o servidor: " + e;
+      }finally{
+        hint.textContent = "";
+      }
+    });
+  </script>
+</body>
+</html>
