@@ -1,12 +1,16 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 
-# Virtual env
+# Virtual env / env vars
 .venv/
+venv/
+ENV/
 .env
 
-# OS / editor
+# OS / Editor
 .DS_Store
 .vscode/
 .idea/
@@ -19,3 +23,8 @@ data/chat_history.sqlite
 data/*.sqlite
 data/sandbox/*
 !data/sandbox/.gitkeep
+
+# Node (si agregas frontend más adelante)
+node_modules/
+dist/
+build/
