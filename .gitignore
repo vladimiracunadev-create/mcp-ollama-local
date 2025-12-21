@@ -1,17 +1,15 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
 
-# Virtual envs
+# Virtual env
 .venv/
-venv/
-ENV/
 .env
 
-# OS
+# OS / editor
 .DS_Store
+.vscode/
+.idea/
 
 # Logs
 *.log
@@ -21,12 +19,3 @@ data/chat_history.sqlite
 data/*.sqlite
 data/sandbox/*
 !data/sandbox/.gitkeep
-
-# Editor/IDE
-.vscode/
-.idea/
-
-# Misc
-*.tmp
-
-
