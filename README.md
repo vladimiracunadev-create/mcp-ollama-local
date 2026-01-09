@@ -37,3 +37,64 @@ ollama list
 # 3) descargar un modelo (ejemplo)
 ollama pull qwen3:8b
 
+---
+
+## Uso
+
+Ejecuta la aplicación web:
+
+```bash
+python main.py
+```
+
+Abre tu navegador en `http://localhost:8000`.
+
+### Endpoints
+- `/`: Página principal.
+- `/chat`: Interfaz de chat.
+- `/options`: Ejecutar herramientas MCP.
+- `/history`: Ver historial.
+
+### API
+- `POST /api/chat`: Enviar mensaje al modelo.
+
+---
+
+## Desarrollo
+
+Para desarrollo local, instala dependencias con `uv`:
+
+```bash
+uv sync
+```
+
+Ejecuta tests (si existen):
+
+```bash
+uv run pytest
+```
+
+---
+
+## Contribuir
+
+Ver [CONTRIBUTING.md](CONTRIBUTING.md) para guías de contribución.
+
+---
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE).
+
+---
+
+## Seguridad
+
+Ver [SECURITY.md](SECURITY.md) para reportar vulnerabilidades.
+
+---
+
+## Roadmap
+
+Ver [ROADMAP.md](ROADMAP.md) para planes futuros.
+
