@@ -22,6 +22,7 @@ Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles ca
 - **Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
 - **Historial Persistente**: Guardado de conversaciones en SQLite.
 - **Privacidad Total**: Todo corre en tu máquina (`localhost`), ideal para datos sensibles.
+- **Cloud Native**: Listo para Docker y Kubernetes (K8s) desde el primer día.
 
 ## 🛠 Arquitectura
 
@@ -61,9 +62,17 @@ Para garantizar un rendimiento fluido, especialmente al ejecutar modelos locales
 2.  **UV**: Gestor de paquetes de Python de alto rendimiento (altamente recomendado) o `pip` estándar.
 3.  **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
 
-## ⚡️ Inicio Rápido (Local)
+## 🚀 Modos de Despliegue
 
-Para opciones de instalación avanzadas (Docker, Kubernetes), consulta [INSTALL.md](INSTALL.md).
+Este proyecto es extremadamente flexible y puede desplegarse donde lo necesites. Para instrucciones detalladas, consulta [📘 GUÍA DE INSTALACIÓN (INSTALL.md)](INSTALL.md).
+
+| Entorno | Ideal para... | Comando Rápido |
+| :--- | :--- | :--- |
+| **💻 Local** | Desarrollo, pruebas rápidas | `make run` |
+| **🐳 Docker** | Uso aislado, producción simple | `docker compose up -d` |
+| **☸️ Kubernetes** | Escalado, clústeres domésticos/prod | `kubectl apply -f k8s/` |
+
+## ⚡️ Inicio Rápido (Local)
 
 Este proyecto incluye un `Makefile` para facilitar todas las tareas locales.
 
