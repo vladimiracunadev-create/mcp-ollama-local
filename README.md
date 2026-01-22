@@ -116,16 +116,21 @@ Usa `make help` para ver la lista completa. Los más comunes son:
 
 ```text
 mcp-ollama-local/
+├── .github/            # Workflows de CI (GitHub Actions)
 ├── apps/
-│   └── web/            # Aplicación FastAPI y frontend
-│       ├── templates/  # Plantillas HTML (Jinja2)
-│       └── static/     # Assets estáticos (CSS, JS)
-├── mcp_server/         # Implementación del servidor MCP y herramientas
-├── host/               # Lógica de interacción con entorno host
-├── data/               # Base de datos SQLite y logs
+│   └── web/            # Aplicación FastAPI y frontend (+ templates/static)
+├── data/               # Base de datos SQLite y logs (persistente)
+├── host/               # Lógica de interacción y configuración
+├── k8s/                # Manifiestos de Kubernetes
+├── mcp_server/         # Servidor MCP y herramientas
+├── tests/              # Suite de pruebas automatizadas
+├── CHANGELOG.md        # Historial de versiones y cambios
+├── Dockerfile          # Definición de imagen de producción
+├── INSTALL.md          # Guía de instalación detallada
+├── Makefile            # Automatización de tareas (run, test, lint)
+├── docker-compose.yml  # Entorno local con Docker
 ├── main.py             # Punto de entrada alternativo
-├── Makefile            # Comandos de automatización
-└── pyproject.toml      # Configuración de dependencias y herramientas
+└── pyproject.toml      # Dependencias y configuración (Ruff/Pytest)
 ```
 
 ## 🤝 Comunidad
