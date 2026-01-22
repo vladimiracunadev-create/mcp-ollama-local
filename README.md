@@ -38,11 +38,28 @@ graph LR
     FastAPI -->|HTML/JSON| User
 ```
 
-## 📋 Requisitos Previos
+## 💻 Especificaciones del Sistema
 
-1.  **Ollama**: Instalado y ejecutándose (`ollama serve`).
-2.  **UV**: Gestor de paquetes de Python (recomendado) o Python 3.13+.
-3.  **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder`).
+Para garantizar un rendimiento fluido, especialmente al ejecutar modelos locales de IA, se recomiendan las siguientes especificaciones:
+
+### Hardware Recomendado
+- **Procesador**: Apple Silicon (M1/M2/M3) o CPU robusta con soporte AVX2.
+- **RAM**:
+  - Mínimo: **8 GB** (para modelos cuantizados de 7B parámetros o menores).
+  - Recomendado: **16 GB** o más (para modelos de 7B+ con mayor contexto).
+- **Almacenamiento**: ~10 GB libres para modelos y dependencias.
+
+### Requisitos de Software
+- **Sistema Operativo**: macOS (optimizado), Linux, o Windows (vía WSL2).
+- **Python**: Versión **3.13** o superior.
+- **Ollama**: Última versión estable para la ejecución del modelo.
+- **Git**: Para clonar el repositorio.
+
+## 📋 Pre-requisitos de Instalación
+
+1.  **Ollama**: Instalado y ejecutándose en segundo plano (`ollama serve`).
+2.  **UV**: Gestor de paquetes de Python de alto rendimiento (altamente recomendado) o `pip` estándar.
+3.  **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
 
 ## ⚡️ Inicio Rápido
 
