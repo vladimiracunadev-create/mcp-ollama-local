@@ -11,6 +11,7 @@ from mcp.client.stdio import stdio_client
 BASE = Path(__file__).resolve().parents[1]
 MCP_SERVER_PY = (BASE / "mcp_server" / "server.py").resolve()
 
+
 async def open_mcp_session() -> tuple[AsyncExitStack, ClientSession]:
     stack = AsyncExitStack()
 
@@ -30,12 +31,16 @@ async def open_mcp_session() -> tuple[AsyncExitStack, ClientSession]:
     await session.initialize()
     return stack, session
 
+
 def mcp_tools_to_ollama(tools) -> list:
-    return [{
-        "type": "function",
-        "function": {
-            "name": t.name,
-            "description": t.description or "",
-            "parameters": t.inputSchema,
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": t.name,
+                "description": t.description or "",
+                "parameters": t.inputSchema,
+            },
         }
-    } for t in tools]
+        for t in tools
+    ]

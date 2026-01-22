@@ -122,7 +122,7 @@ async def api_health():
     try:
         async with httpx.AsyncClient(timeout=3) as client:
             r = await client.get(f"{s.ollama_url}/api/tags")
-            ollama_ok = (r.status_code == 200)
+            ollama_ok = r.status_code == 200
             ollama_detail = "API OK" if ollama_ok else f"HTTP {r.status_code}"
     except Exception as e:
         ollama_ok = False
@@ -150,6 +150,7 @@ async def api_health():
         "mcp_ok": mcp_ok,
         "mcp_detail": mcp_detail,
     }
+
 
 @app.get("/history", response_class=HTMLResponse)
 def history_page():
@@ -191,21 +192,23 @@ def api_history(limit: int = 200, role: str = "", q: str = ""):
         rows = con.execute(
             "SELECT id, ts, role, content FROM chat "
             f"{where_sql} ORDER BY id DESC LIMIT ?",
-            (*params, limit)
+            (*params, limit),
         ).fetchall()
 
         con.close()
 
         # los devolvemos en orden cronológico (más antiguo -> más nuevo)
-        items = [{
-            "id": r["id"],
-            "ts": r["ts"],
-            "role": r["role"],
-            "content": r["content"],
-        } for r in reversed(rows)]
+        items = [
+            {
+                "id": r["id"],
+                "ts": r["ts"],
+                "role": r["role"],
+                "content": r["content"],
+            }
+            for r in reversed(rows)
+        ]
 
         return {"ok": True, "total": total, "items": items}
 
     except Exception as e:
         return {"ok": False, "error": str(e)}
-

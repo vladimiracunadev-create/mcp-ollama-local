@@ -18,11 +18,13 @@ def init_db(db_path):
     con.commit()
     con.close()
 
+
 def save_msg(db_path, role, content):
     con = sqlite3.connect(db_path)
     con.execute("INSERT INTO chat(role, content) VALUES (?, ?)", (role, content))
     con.commit()
     con.close()
+
 
 def _tool_content_to_text(content) -> str:
     parts = []
@@ -36,6 +38,7 @@ def _tool_content_to_text(content) -> str:
         else:
             parts.append(str(c))
     return "\n".join(parts)
+
 
 async def run_chat(user_text: str, settings, use_history: bool = True) -> str:
     if use_history:
@@ -51,7 +54,7 @@ async def run_chat(user_text: str, settings, use_history: bool = True) -> str:
             "content": (
                 "Responde SIEMPRE en español. "
                 "Usa herramientas SOLO si son necesarias para responder."
-            )
+            ),
         }
 
         messages = [system_msg, {"role": "user", "content": user_text}]
@@ -92,11 +95,7 @@ async def run_chat(user_text: str, settings, use_history: bool = True) -> str:
             result = await session.call_tool(fn, args)
             tool_text = _tool_content_to_text(result.content)
 
-            messages.append({
-                "role": "tool",
-                "tool_name": fn,
-                "content": tool_text
-            })
+            messages.append({"role": "tool", "tool_name": fn, "content": tool_text})
 
         final_msg = await ollama_chat(
             settings.ollama_url, settings.model, messages, ollama_tools

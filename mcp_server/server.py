@@ -11,11 +11,13 @@ mcp = FastMCP("mcp-local-tools")
 BASE = Path(__file__).resolve().parents[1]
 SANDBOX = (BASE / "data" / "sandbox").resolve()
 
+
 def safe_sandbox_path(rel: str) -> Path:
     p = (SANDBOX / rel).resolve()
     if not str(p).startswith(str(SANDBOX)):
         raise ValueError("Ruta fuera de sandbox (bloqueado).")
     return p
+
 
 @mcp.tool()
 def list_files(rel_dir: str = ".", max_items: int = 200) -> dict:
@@ -28,12 +30,15 @@ def list_files(rel_dir: str = ".", max_items: int = 200) -> dict:
     for i, entry in enumerate(sorted(d.iterdir(), key=lambda x: x.name.lower())):
         if i >= max_items:
             break
-        items.append({
-            "name": entry.name,
-            "type": "dir" if entry.is_dir() else "file",
-            "size": entry.stat().st_size if entry.is_file() else None,
-        })
+        items.append(
+            {
+                "name": entry.name,
+                "type": "dir" if entry.is_dir() else "file",
+                "size": entry.stat().st_size if entry.is_file() else None,
+            }
+        )
     return {"ok": True, "dir": str(d), "items": items}
+
 
 @mcp.tool()
 def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
@@ -56,6 +61,7 @@ def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
                 hits.append(str(f.relative_to(SANDBOX)))
     return {"ok": True, "needle": needle, "hits": hits}
 
+
 @mcp.tool()
 def system_info() -> dict:
     """Info útil del sistema y disco (en el proyecto)."""
@@ -69,8 +75,10 @@ def system_info() -> dict:
         "disk_free_gb": round(free / (1024**3), 2),
     }
 
+
 def main():
     mcp.run(transport="stdio")
+
 
 if __name__ == "__main__":
     main()

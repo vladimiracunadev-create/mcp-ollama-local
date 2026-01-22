@@ -14,5 +14,6 @@ def main():
         ans = asyncio.run(run_chat(txt, s, use_history=True))
         print(f"\nIA> {ans}\n")
 
+
 if __name__ == "__main__":
     main()

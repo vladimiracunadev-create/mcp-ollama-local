@@ -12,6 +12,7 @@ class Settings:
     model: str
     history_db: Path
 
+
 def load_settings() -> Settings:
     base = Path(__file__).resolve().parents[1]
     ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")

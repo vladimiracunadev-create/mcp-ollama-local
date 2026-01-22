@@ -4,6 +4,7 @@ from apps.web.app import app
 
 client = TestClient(app)
 
+
 def test_read_main():
     """Test básico para verificar que la app responde."""
     response = client.get("/")
