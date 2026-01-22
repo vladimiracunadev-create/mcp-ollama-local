@@ -5,7 +5,7 @@
 ![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
-![CI](https://github.com/vladimiracunadev-create/mcp-ollama-local/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/vladimiracunadev-create/mcp-ollama-local/actions/workflows/ci.yml/badge.svg?branch=main)
 
 ---
 
