@@ -128,15 +128,12 @@ mcp-ollama-local/
 └── pyproject.toml      # Configuración de dependencias y herramientas
 ```
 
-## 🤝 Contribuyendo
+## 🤝 Comunidad
+Este proyecto se rige por un [Código de Conducta](CODE_OF_CONDUCT.md). Al participar, se espera que mantengas este código.
 
-1.  Haz un Fork del repositorio.
-2.  Crea una rama para tu feature (`git checkout -b feature/nueva-magia`).
-3.  Asegúrate de que el código pase el linter (`make lint`).
-4.  Haz Commit y Push.
-5.  Abre un Pull Request.
-
-Ver [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
+- **Historial de Cambios**: Consulta el [CHANGELOG.md](CHANGELOG.md) para ver la evolución del proyecto.
+- **Créditos**: Conoce a los creadores en [AUTHORS.md](AUTHORS.md).
+- **Contribuciones**: Lee [CONTRIBUTING.md](CONTRIBUTING.md) antes de enviar tu primer PR.
 
 ## 📄 Licencia
 
