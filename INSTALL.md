@@ -23,6 +23,20 @@ Recomendado para desarrollo o uso personal rápido en Mac/Linux.
     ```
 3.  **Acceder**: [http://localhost:8000](http://localhost:8000)
 
+### Configuración Avanzada (Variables de Entorno)
+Puedes personalizar el comportamiento sin tocar el código:
+
+| Variable | Descripción | Valor por Defecto |
+| :--- | :--- | :--- |
+| `OLLAMA_URL` | URL del servidor Ollama | `http://localhost:11434` |
+| `MODEL` | Modelo LLM a utilizar | `qwen2.5-coder:7b` |
+| `DATA_DIR` | Ruta para base de datos y logs | `./data` (en raíz del proyecto) |
+
+Ejemplo:
+```bash
+MODEL=llama3:8b make run
+```
+
 ---
 
 ## Opción 2: Docker (Recomendado)

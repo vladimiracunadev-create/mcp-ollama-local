@@ -19,7 +19,7 @@ def load_settings() -> Settings:
     data_dir = Path(os.getenv("DATA_DIR", str(base / "data")))
 
     ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
-    model = os.getenv("MODEL", "qwen3:8b")
+    model = os.getenv("MODEL", "qwen2.5-coder:7b")
     history_db = data_dir / "chat_history.sqlite"
 
     # Asegurar que el directorio de datos exista
