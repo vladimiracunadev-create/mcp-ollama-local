@@ -65,6 +65,14 @@ La configuración por defecto asume que puedes acceder al host vía `host.docker
 - **Mac/Windows**: Funciona automáticamente.
 - **Linux**: Debes asegurarte de que Docker soporte `host-gateway` (incluido en `docker-compose.yml`). Si Ollama solo escucha en `127.0.0.1`, configúralo para escuchar en `0.0.0.0` con `OLLAMA_HOST=0.0.0.0 ollama serve`.
 
+### 📥 Descarga del Modelo (REQUERIDO)
+Antes de usar la aplicación, **debes descargar un modelo LLM** en tu máquina host:
+```bash
+ollama pull qwen3:8b
+# O cualquier otro modelo compatible
+```
+**Nota**: Los modelos son archivos grandes (5-20GB) que se almacenan localmente. NO se incluyen en el repositorio de GitHub.
+
 ---
 
 ## Opción 3: Kubernetes (K8s)
