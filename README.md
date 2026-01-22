@@ -18,7 +18,7 @@ Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles ca
 
 - **Chat Conversacional**: Interfaz web limpia para interactuar con tus modelos locales.
 - **Protocolo MCP**: Integración nativa para expandir las capacidades del modelo (extensible).
-- **Herramientas Seguras**: Includes tools de sistema (`system_info`, `list_files`, `grep_text`).
+- **Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
 - **Historial Persistente**: Guardado de conversaciones en SQLite.
 - **Privacidad Total**: Todo corre en tu máquina (`localhost`), ideal para datos sensibles.
 
@@ -49,7 +49,7 @@ Este proyecto incluye un `Makefile` para facilitar todas las tareas.
 
 1.  **Clonar y configurar entorno**:
     ```bash
-    git clone <url-repo>
+    git clone https://github.com/vladimiracunadev-create/mcp-ollama-local.git
     cd mcp-ollama-local
     make install
     ```
