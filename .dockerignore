@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+.venv
+.env
+data/
+tests/
+Makefile
+README.md
+LICENSE
+CONTRIBUTING.md
+ROADMAP.md
+SECURITY.md
+.github
+.DS_Store

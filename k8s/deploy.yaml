@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-ollama-local
+  labels:
+    app: mcp-ollama-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-ollama-local
+  template:
+    metadata:
+      labels:
+        app: mcp-ollama-local
+    spec:
+      containers:
+      - name: app
+        image: mcp-ollama-local:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OLLAMA_URL
+          value: "http://host.docker.internal:11434" # Ajustar según tu setup de K8s/Ollama
+        - name: DATA_DIR
+          value: "/app/data"
+        volumeMounts:
+        - name: data-volume
+          mountPath: "/app/data"
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: mcp-ollama-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mcp-ollama-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

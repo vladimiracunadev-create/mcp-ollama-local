@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: mcp-ollama-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - DATA_DIR=/app/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

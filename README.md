@@ -61,9 +61,11 @@ Para garantizar un rendimiento fluido, especialmente al ejecutar modelos locales
 2.  **UV**: Gestor de paquetes de Python de alto rendimiento (altamente recomendado) o `pip` estándar.
 3.  **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
 
-## ⚡️ Inicio Rápido
+## ⚡️ Inicio Rápido (Local)
 
-Este proyecto incluye un `Makefile` para facilitar todas las tareas.
+Para opciones de instalación avanzadas (Docker, Kubernetes), consulta [INSTALL.md](INSTALL.md).
+
+Este proyecto incluye un `Makefile` para facilitar todas las tareas locales.
 
 1.  **Clonar y configurar entorno**:
     ```bash
