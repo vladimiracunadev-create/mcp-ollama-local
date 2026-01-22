@@ -28,3 +28,6 @@ data/sandbox/*
 node_modules/
 dist/
 build/
+
+# MacOS Metadata
+._*
