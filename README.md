@@ -141,6 +141,7 @@ Este proyecto se rige por un [Código de Conducta](CODE_OF_CONDUCT.md). Al parti
 - **Historial de Cambios**: Consulta el [CHANGELOG.md](CHANGELOG.md) para ver la evolución del proyecto.
 - **Créditos**: Conoce a los creadores en [AUTHORS.md](AUTHORS.md).
 - **Contribuciones**: Lee [CONTRIBUTING.md](CONTRIBUTING.md) antes de enviar tu primer PR.
+- **Problemas Comunes**: Si encuentras errores, revisa [TROUBLESHOOTING.md](TROUBLESHOOTING.md) primero.
 
 ## 📄 Licencia
 
