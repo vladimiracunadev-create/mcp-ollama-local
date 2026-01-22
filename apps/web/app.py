@@ -1,16 +1,16 @@
 import asyncio
+import sqlite3
 from pathlib import Path
 
-import sqlite3
 import httpx
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from host.settings import load_settings
 from host.chat_engine import run_chat
 from host.mcp_bridge import open_mcp_session
+from host.settings import load_settings
 
 # -----------------------
 # App + paths
@@ -91,7 +91,11 @@ def api_mcp(inp: MCPIn):
         stack, session = await open_mcp_session()
         try:
             result = await session.call_tool(inp.tool, inp.args)
-            return {"ok": True, "tool": inp.tool, "result": _content_to_plain(result.content)}
+            return {
+                "ok": True,
+                "tool": inp.tool,
+                "result": _content_to_plain(result.content),
+            }
         finally:
             await stack.aclose()
 
@@ -185,7 +189,8 @@ def api_history(limit: int = 200, role: str = "", q: str = ""):
         limit = max(10, min(int(limit), 1000))
 
         rows = con.execute(
-            f"SELECT id, ts, role, content FROM chat {where_sql} ORDER BY id DESC LIMIT ?",
+            "SELECT id, ts, role, content FROM chat "
+            f"{where_sql} ORDER BY id DESC LIMIT ?",
             (*params, limit)
         ).fetchall()
 

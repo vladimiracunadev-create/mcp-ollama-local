@@ -1,6 +1,8 @@
 import asyncio
-from host.settings import load_settings
+
 from host.chat_engine import run_chat
+from host.settings import load_settings
+
 
 def main():
     s = load_settings()

@@ -1,7 +1,9 @@
 from __future__ import annotations
-from pathlib import Path
+
 import platform
 import shutil
+from pathlib import Path
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("mcp-local-tools")
@@ -35,7 +37,7 @@ def list_files(rel_dir: str = ".", max_items: int = 200) -> dict:
 
 @mcp.tool()
 def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
-    """Busca needle en archivos .txt/.md/.py/.js/.json/.html/.css dentro de data/sandbox."""
+    """Busca needle en archivos de texto/código dentro de data/sandbox."""
     d = safe_sandbox_path(rel_dir)
     if not d.exists() or not d.is_dir():
         return {"ok": False, "error": f"No existe o no es directorio: {d}"}

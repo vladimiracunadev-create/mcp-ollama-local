@@ -1,7 +1,9 @@
 import json
 import sqlite3
+
+from .mcp_bridge import mcp_tools_to_ollama, open_mcp_session
 from .ollama_client import ollama_chat
-from .mcp_bridge import open_mcp_session, mcp_tools_to_ollama
+
 
 def init_db(db_path):
     con = sqlite3.connect(db_path)
@@ -58,12 +60,14 @@ async def run_chat(user_text: str, settings, use_history: bool = True) -> str:
             save_msg(settings.history_db, "user", user_text)
 
         # 1) Primera respuesta del modelo
-        assistant = await ollama_chat(settings.ollama_url, settings.model, messages, ollama_tools)
+        assistant = await ollama_chat(
+            settings.ollama_url, settings.model, messages, ollama_tools
+        )
         messages.append(assistant)
 
         tool_calls = assistant.get("tool_calls") or []
 
-        # ✅ SI NO HAY TOOLS: devolvemos la respuesta directa (NO hacemos segunda llamada)
+        # ✅ SI NO HAY TOOLS: devolvemos respuesta directa (NO hacemos segunda llamada)
         if not tool_calls:
             out = assistant.get("content") or ""
             if use_history:
@@ -94,7 +98,9 @@ async def run_chat(user_text: str, settings, use_history: bool = True) -> str:
                 "content": tool_text
             })
 
-        final_msg = await ollama_chat(settings.ollama_url, settings.model, messages, ollama_tools)
+        final_msg = await ollama_chat(
+            settings.ollama_url, settings.model, messages, ollama_tools
+        )
         out = final_msg.get("content") or ""
 
         if use_history:
