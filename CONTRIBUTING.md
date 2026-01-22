@@ -1,27 +1,47 @@
 # Guía para Contribuir
 
-¡Gracias por tu interés en contribuir a mcp-ollama-local!
+¡Gracias por tu interés en hacer `mcp-ollama-local` mejor!
 
-## Cómo Contribuir
+## Inicio Rápido
 
-1. **Forkea el repositorio** y crea una rama para tu contribución.
-2. **Instala dependencias**: Usa `uv` para el entorno virtual.
-3. **Haz cambios**: Sigue las mejores prácticas de código.
-4. **Prueba**: Ejecuta tests y verifica que todo funcione.
-5. **Envía un Pull Request**: Describe tus cambios claramente.
+El proyecto usa `Makefile` para simplificar el desarrollo.
 
-## Estilo de Código
-- Usa PEP 8 para Python.
-- Escribe commits descriptivos en inglés o español.
-- Agrega tests para nuevas funcionalidades.
+1.  **Forkea y Clona** el repositorio.
+2.  **Instala dependencias**:
+    ```bash
+    make install
+    ```
+3.  **Crea una rama**: `git checkout -b feature/mi-mejora`
 
-## Reportar Bugs
-Abre un issue con:
-- Descripción del bug.
-- Pasos para reproducirlo.
-- Versión de Python, Ollama, etc.
+## Flujo de Trabajo
 
-## Preguntas
-Para preguntas, usa los issues o el foro del proyecto.
+Antes de enviar tu Pull Request, asegúrate de cumplir con los estándares de calidad:
 
-¡Esperamos tus contribuciones!
+- **Linting**: El código debe estar limpio.
+    ```bash
+    make lint
+    # Si hay errores, puedes intentar corregirlos automáticamente con:
+    make format
+    ```
+- **Tests**: Asegúrate de no romper nada existente.
+    ```bash
+    make test
+    ```
+
+## Estilo de Código y Commits
+
+- **Python**: Usamos `ruff` para mantener el estilo PEP 8 automáticamente.
+- **Commits**: Recomendamos usar [Conventional Commits](https://www.conventionalcommits.org/).
+    - `feat: nueva funcionalidad`
+    - `fix: corrección de bug`
+    - `docs: mejoras en documentación`
+    - `style: formateo, espacios en blanco`
+
+## Reportar Problemas
+
+Si encuentras un bug, por favor abre un Issue incluyendo:
+- Pasos para reproducir.
+- Comportamiento esperado vs real.
+- Tu entorno (SO, versión de Python/Ollama).
+
+¡Esperamos tus PRs!
