@@ -143,6 +143,15 @@ Este proyecto se rige por un [Código de Conducta](CODE_OF_CONDUCT.md). Al parti
 - **Contribuciones**: Lee [CONTRIBUTING.md](CONTRIBUTING.md) antes de enviar tu primer PR.
 - **Problemas Comunes**: Si encuentras errores, revisa [TROUBLESHOOTING.md](TROUBLESHOOTING.md) primero.
 
+## 📚 Documentación del Proyecto
+
+Como parte de los estándares de este ecosistema, la documentación detallada se divide en:
+- [📘 Guía de Instalación y Despliegue (INSTALL.md)](INSTALL.md)
+- [📜 Historial de Cambios (CHANGELOG.md)](CHANGELOG.md)
+- [🤝 Guía de Contribución (CONTRIBUTING.md)](CONTRIBUTING.md)
+- [🛡️ Política de Seguridad (SECURITY.md)](SECURITY.md)
+- [⚖️ Código de Conducta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.

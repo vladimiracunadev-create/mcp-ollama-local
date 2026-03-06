@@ -1,23 +1,24 @@
-# Política de Seguridad
+# Política de Seguridad y Divulgación Responsable
 
-## Reportar Vulnerabilidades
+La seguridad, trazabilidad y observabilidad son pilares de este ecosistema de proyectos. Tomamos con la mayor seriedad cualquier reporte referente a la integridad de nuestras aplicaciones.
 
-Si encuentras una vulnerabilidad de seguridad en mcp-ollama-local, por favor repórtala de manera responsable.
+## Versiones Soportadas
 
-**No publiques** información sobre vulnerabilidades en issues públicos o foros.
+Actualmente, solo la versión `main` (última iteración o tag de release) en los distintos repositorios recibe actualizaciones y parches de seguridad directos. Las versiones antiguas legadas bajo tags sin soporte no están cubiertas a menos que se indique estrictamente lo contrario en las notas del repositorio.
 
-Envía un email a [tu-email@ejemplo.com] con detalles de la vulnerabilidad. Incluye:
-- Descripción de la vulnerabilidad.
-- Pasos para reproducirla.
-- Impacto potencial.
-- Sugerencias para mitigarla.
+## Cómo Reportar una Vulnerabilidad
 
-Responderemos en un plazo de 48 horas y trabajaremos para resolver el problema lo antes posible.
+**Por favor, no reportes problemas de seguridad a través de Issues públicos de GitHub.** Esto expone la vulnerabilidad a actores maliciosos antes de que el parche pueda ser emitido.
 
-## Mejores Prácticas de Seguridad
-- Ejecuta el proyecto en un entorno aislado.
-- Mantén Ollama y dependencias actualizadas.
-- No expongas la aplicación web a redes públicas sin autenticación.
-- Revisa los logs regularmente para actividades sospechosas.
+Para reportes de seguridad, fallos críticos de integridad o configuraciones por defecto mitigables (como credenciales expuestas, RCE, inyecciones de código severas, o bypass de autenticación), sigue estos pasos:
 
-Gracias por ayudar a mantener el proyecto seguro.
+1. **Envía un correo electrónico** directamente a `vladimir.acuna.dev@gmail.com`.
+2. Incluye en tu correo:
+   - El ecosistema o repositorio afectado (ej. `mcp-ollama-local`, `social-bot-scheduler`).
+   - Los pasos detallados para reproducir la vulnerabilidad.
+   - Opcionalmente, una prueba de concepto (PoC) en formato de script o video si aplica.
+   - Posibles implicaciones de seguridad evaluadas bajo estándares técnicos.
+
+Te contactaré a la brevedad posible (generalmente en menos de 48 horas laborales). Una vez analizado y mitigado, si deseas ser acreditado y tu hallazgo es verificable, recibirás el reconocimiento público merecido en nuestros reportes de seguridad o CHANGELOG.
+
+¡Gracias por ayudar a mantener la infraestructura segura y profesional!
