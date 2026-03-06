@@ -5,9 +5,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
-## [0.1.0] - 2026-01-22
+## [Unreleased]
 
 ### Añadido
+- **Seguridad**: Análisis estático de vulnerabilidades con `bandit` integrado de forma nativa en CI.
+- **Testing**: Medición automática de cobertura de código con `pytest-cov` en el pipeline.
+
+### Cambiado
+- **Docker**: `Dockerfile` reescrito usando arquitectura Multi-Stage para reducir drásticamente el tamaño final de la imagen, e implementada ejecución de contenedor en modo *Rootless* (usuario `appuser`) maximizando la seguridad.
+- **Kubernetes**: Manifiesto de despliegue (`k8s/deploy.yaml`) robustecido. Incluye ahora *Liveness Probes*, *Readiness Probes* (consumiendo `/api/health`), y cuotas de recursos estrictas (*Limits/Requests*).
+- **CI/CD**: Pipeline de GitHub Actions expandido para integrar reporte de cobertura y validaciones de seguridad por cada commit.
+
+## [0.1.0] - 2026-01-22### Añadido
 - **Infraestructura**: Soporte completo para Docker (`Dockerfile`, `docker-compose.yml`) y Kubernetes (`k8s/`).
 - **CI/CD**: Workflow de GitHub Actions para linting, formateo y testing automático.
 - **Automatización**: Nuevo `Makefile` para estandarizar comandos (`make run`, `make test`, `make lint`).
