@@ -18,13 +18,32 @@ spec:
       - name: app
         image: mcp-ollama-local:latest
         imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8000
         env:
         - name: OLLAMA_URL
           value: "http://host.docker.internal:11434" # Ajustar según tu setup de K8s/Ollama
         - name: DATA_DIR
           value: "/app/data"
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         volumeMounts:
         - name: data-volume
           mountPath: "/app/data"

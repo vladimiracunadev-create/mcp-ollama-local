@@ -191,7 +191,8 @@ def api_history(limit: int = 200, role: str = "", q: str = ""):
 
         rows = con.execute(
             "SELECT id, ts, role, content FROM chat "
-            f"{where_sql} ORDER BY id DESC LIMIT ?",
+            f"{where_sql} ORDER BY id DESC LIMIT ?",  # nosec B608 usaba param safe limit, where_sql seguro por parametrizacion de arriba
+            (*params, limit),
             (*params, limit),
         ).fetchall()
 

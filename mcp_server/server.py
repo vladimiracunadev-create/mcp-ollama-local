@@ -55,7 +55,7 @@ def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
         if f.is_file() and f.suffix.lower() in exts:
             try:
                 text = f.read_text(encoding="utf-8", errors="ignore")
-            except Exception:
+            except OSError:  # nosec B112 - Ignorar archivos ilegibles intencionalmente
                 continue
             if needle.lower() in text.lower():
                 hits.append(str(f.relative_to(SANDBOX)))

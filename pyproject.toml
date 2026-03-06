@@ -13,8 +13,10 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.4",
     "mypy>=1.14.1",
     "pytest>=8.3.4",
+    "pytest-cov>=7.0.0",
     "ruff>=0.9.2",
 ]
 
@@ -29,3 +31,7 @@ ignore = []
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", ".ruff_cache", "k8s"]
+skips = ["B104"] # B104 es bind a interfaces abiertas (0.0.0.0), es intencional en web apps dockerizadas

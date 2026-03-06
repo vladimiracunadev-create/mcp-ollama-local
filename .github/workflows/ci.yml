@@ -23,10 +23,17 @@ jobs:
         run: uv sync
 
       - name: Linting (Ruff)
-        run: uv run ruff check .
+        run: |
+          uv run ruff check .
 
       - name: Formatting Check (Ruff)
-        run: uv run ruff format --check .
+        run: |
+          uv run ruff format --check .
 
-      - name: Run Tests (Pytest)
-        run: uv run pytest
+      - name: Security Scan (Bandit)
+        run: |
+          uv run bandit -r . -c "pyproject.toml"
+
+      - name: Run Tests & Coverage
+        run: |
+          uv run pytest --cov=apps --cov=host --cov-report=xml --cov-report=term-missing
