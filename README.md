@@ -146,11 +146,27 @@ Este proyecto se rige por un [Código de Conducta](CODE_OF_CONDUCT.md). Al parti
 ## 📚 Documentación del Proyecto
 
 Como parte de los estándares de este ecosistema, la documentación detallada se divide en:
+
+### 📖 Guías para Usuarios
 - [📘 Guía de Instalación y Despliegue (INSTALL.md)](INSTALL.md)
+- [🎓 Manual de Principiantes (USER_MANUAL.md)](USER_MANUAL.md)
+- [🔄 Guía de Activación de Modelos (COMO_ACTIVAR_MODELOS.md)](COMO_ACTIVAR_MODELOS.md)
+- [❓ Problemas Comunes (TROUBLESHOOTING.md)](TROUBLESHOOTING.md)
+
+### 🏗️ Arquitectura y Evaluadores (Reclutadores/Tech Leads)
+- [🕴️ Logros de Ingeniería y Reclutadores (RECRUITER.md)](RECRUITER.md)
+- [🗺️ Arquitectura de Archivos (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
+- [📊 Especificaciones de Sistema y Hardware (SYSTEM_SPECS.md)](SYSTEM_SPECS.md)
+- [📖 Glosario Técnico del Proyecto (GLOSSARY.md)](GLOSSARY.md)
+- [⚔️ Prácticas Prohibidas y Antipatrones (killed.md)](killed.md)
+
+### ⚙️ Estandarización de Desarrollo (Comunidad)
+- [⚙️ Configuración del Entorno Dev (ENVIRONMENT_SETUP.md)](ENVIRONMENT_SETUP.md)
 - [📜 Historial de Cambios (CHANGELOG.md)](CHANGELOG.md)
 - [🤝 Guía de Contribución (CONTRIBUTING.md)](CONTRIBUTING.md)
 - [🛡️ Política de Seguridad (SECURITY.md)](SECURITY.md)
 - [⚖️ Código de Conducta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)
+- [🗺️ Hoja de Ruta (ROADMAP.md)](ROADMAP.md)
 
 ## 📄 Licencia
 
