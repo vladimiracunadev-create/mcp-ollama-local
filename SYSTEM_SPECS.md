@@ -21,3 +21,12 @@ El archivo `k8s/deploy.yaml` define las siguientes cuotas estrictas de recursos 
 * **Limits (Tope estricto de freno - OOMKilled):** 500m CPU / 512Mi RAM.
 
 *(Nota: En escenarios empresariales reales, Ollama se sirve en un Pool o Nodo de GPUs separado o bajo NVIDIA Triton. Los Limits expuestos aquí son exclusivamente para proteger el frontend y el conector API Async que no consume VRAM).*
+
+## 4. Seguridad Integrada (Defense in Depth)
+
+El sistema opera bajo un modelo de **Defensa en Profundidad** para entornos locales y productivos:
+1. **Contenedor**: Usuario no-root (`appuser`), puerto 8000, `HEALTHCHECK` activo.
+2. **Red**: Bind exclusivo a `127.0.0.1` en Compose para evitar exposición en red LAN.
+3. **App Web**: Middlewares de Cabeceras de Seguridad y Rate Limiting (60 req/min).
+4. **Auth**: Capa `X-API-Key` opcional u obligatoria según `.env`.
+5. **MCP**: Validación estricta de rutas y sandbox enjaulado en `data/sandbox`.

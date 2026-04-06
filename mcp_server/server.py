@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import platform
 import shutil
 from pathlib import Path
@@ -13,8 +14,14 @@ SANDBOX = (BASE / "data" / "sandbox").resolve()
 
 
 def safe_sandbox_path(rel: str) -> Path:
+    # Evitar que suba niveles con .. antes de resolver
+    if ".." in rel:
+        raise ValueError("Ruta con '..' detectada (bloqueado).")
+    
     p = (SANDBOX / rel).resolve()
-    if not str(p).startswith(str(SANDBOX)):
+    
+    # Verificación robusta: el sandbox debe ser el prefijo común
+    if os.path.commonpath([str(p), str(SANDBOX)]) != str(SANDBOX):
         raise ValueError("Ruta fuera de sandbox (bloqueado).")
     return p
 
@@ -22,6 +29,8 @@ def safe_sandbox_path(rel: str) -> Path:
 @mcp.tool()
 def list_files(rel_dir: str = ".", max_items: int = 200) -> dict:
     """Lista archivos/carpetas dentro de data/sandbox (modo seguro)."""
+    # Hard cap para evitar abuso por prompt injection
+    max_items = min(max_items, 1000)
     d = safe_sandbox_path(rel_dir)
     if not d.exists() or not d.is_dir():
         return {"ok": False, "error": f"No existe o no es directorio: {d}"}
@@ -43,6 +52,8 @@ def list_files(rel_dir: str = ".", max_items: int = 200) -> dict:
 @mcp.tool()
 def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
     """Busca needle en archivos de texto/código dentro de data/sandbox."""
+    # Hard cap para evitar abuso de recursos
+    max_hits = min(max_hits, 100)
     d = safe_sandbox_path(rel_dir)
     if not d.exists() or not d.is_dir():
         return {"ok": False, "error": f"No existe o no es directorio: {d}"}
@@ -64,15 +75,14 @@ def grep_text(needle: str, rel_dir: str = ".", max_hits: int = 50) -> dict:
 
 @mcp.tool()
 def system_info() -> dict:
-    """Info útil del sistema y disco (en el proyecto)."""
+    """Info básica del sistema (restringida)."""
     total, used, free = shutil.disk_usage(str(BASE))
     return {
-        "os": platform.platform(),
+        "os": platform.system(),
         "python": platform.python_version(),
-        "project_root": str(BASE),
-        "sandbox": str(SANDBOX),
         "disk_total_gb": round(total / (1024**3), 2),
         "disk_free_gb": round(free / (1024**3), 2),
+        "status": "Healthy (restricted mode)",
     }
 
 

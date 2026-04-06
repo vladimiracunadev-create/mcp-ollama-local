@@ -23,6 +23,7 @@ Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles ca
 - **Protocolo MCP**: Integración nativa para expandir las capacidades del modelo (extensible).
 - **Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
 - **Historial Persistente**: Guardado de conversaciones en SQLite.
+- **Seguridad en 8 Capas**: Protección integral desde el contenedor hasta la red y la aplicación.
 - **Privacidad Total**: Todo corre en tu máquina (`localhost`), ideal para datos sensibles.
 - **Cloud Native**: Listo para Docker y Kubernetes (K8s) desde el primer día.
 
@@ -113,6 +114,21 @@ Usa `make help` para ver la lista completa. Los más comunes son:
 | `make format` | Corrige formato de código automáticamente. |
 | `make test` | Ejecuta las pruebas unitarias con **Pytest**. |
 | `make clean` | Elimina archivos temporales y cachés. |
+
+## 🛡️ Seguridad (Defensa en Profundidad)
+
+Este proyecto implementa un modelo de seguridad de **8 capas**:
+
+1.  **Contenedor**: Ejecución como `appuser` (no-root) y en puerto no privilegiado.
+2.  **Red**: Bind de puertos restringido a `127.0.0.1` en Docker Compose.
+3.  **Credenciales**: Soporte para `API_KEY` y modo obligatorio.
+4.  **Servidor Web**: Cabeceras `CSP`, `HSTS`, `XSS Protection` y Rate Limiting (60 req/min).
+5.  **Tools MCP**: Sandbox estricto con validación de rutas y enmascaramiento de info del sistema.
+6.  **Autenticación**: Validación `X-API-Key` en todos los endpoints de la API.
+7.  **CI/CD**: Escaneo de vulnerabilidades y linting automatizado en GitHub Actions.
+8.  **Supply Chain**: Control de finales de línea `LF` vía `.gitattributes`.
+
+> ⚠️ **Nota**: Para uso local, la seguridad es opcional, pero se recomienda activar `API_KEY` si se expone el servicio en redes compartidas.
 
 ## 📂 Estructura del Proyecto
 

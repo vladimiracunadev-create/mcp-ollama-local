@@ -24,7 +24,7 @@ graph TD
 
 ### 1. `apps/web/`
 Contiene la **Capa de Presentación e Interfaz**.
-- `app.py`: Servidor FastAPI de alto rendimiento (asíncrono). Expone los endpoints HTTP (`/`, `/api/chat`, `/api/health`). Recibe la solicitud del usuario web, y se apoya en el subsistema `/host` para orquestar la IA.
+- `app.py`: Servidor FastAPI de alto rendimiento (asíncrono). Expone los endpoints HTTP (`/`, `/api/chat`, `/api/health`). Incluye middlewares de **Seguridad (Headers)** y **Rate Limiting**.
 - `templates/` & `static/`: HTMLs (basados en CSS ligero y JS Vanilla) para interfaces ágiles, libres de frameworks pesados de frontend (ej. SPAs con React/Vue) por filosofía de minimalismo reactivo.
 
 ### 2. `host/`
@@ -45,4 +45,6 @@ La **Capa Persistente Local**. Está mapeada externamente a los *volumes* de Doc
 ### 5. `Infraestructura` (Raíz, K8s, GitHub)
 - `pyproject.toml` y `uv.lock`: Definimos `uv` (Gestor de Dependencias Ultra-rápido en Rust). Evitamos `requirements.txt` por mutabilidad incontrolada.
 - `k8s/deploy.yaml`: Manifiestos de Kubernetes para Despliegues Cloud-Native (*Liveness Probes, CPU requests*).
-- `Dockerfile`: Orquestador Multi-Layer de Docker con compilación en fases y Drop de privilegios Linux (*Rootless appuser*).
+- `Dockerfile`: Orquestador Multi-Layer de Docker con compilación en fases, Drop de privilegios Linux (*Rootless appuser*) y `HEALTHCHECK`.
+- `.github/workflows/security.yml`: Pipeline de escaneo de seguridad y auditoría de dependencias.
+- `.gitattributes`: Forzado de finales de línea `LF` para consistencia en ejecución Docker/Linux.

@@ -1,10 +1,13 @@
 import asyncio
 import sqlite3
+import time
+from collections import defaultdict
 from pathlib import Path
 
-import httpx
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, Request, Security
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security.api_key import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -13,9 +16,64 @@ from host.mcp_bridge import open_mcp_session
 from host.settings import load_settings
 
 # -----------------------
+# Auth & Security
+# -----------------------
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    settings = load_settings()
+    if not settings.api_key:
+        return None
+    if api_key_header == settings.api_key:
+        return api_key_header
+    raise HTTPException(status_code=403, detail="Could not validate credentials")
+
+# -----------------------
 # App + paths
 # -----------------------
 app = FastAPI()
+settings = load_settings()
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Rate Limiting (Simple in-memory)
+RATE_LIMIT_STASH = defaultdict(list)
+RATE_LIMIT_MAX = 60  # requests
+RATE_LIMIT_WINDOW = 60  # seconds
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    client_ip = request.client.host
+    now = time.time()
+    
+    # Limpiar ventanas antiguas
+    RATE_LIMIT_STASH[client_ip] = [t for t in RATE_LIMIT_STASH[client_ip] if now - t < RATE_LIMIT_WINDOW]
+    
+    if len(RATE_LIMIT_STASH[client_ip]) >= RATE_LIMIT_MAX:
+        return JSONResponse(status_code=429, content={"ok": False, "error": "Rate limit exceeded. Slow down."})
+    
+    RATE_LIMIT_STASH[client_ip].append(now)
+    return await call_next(request)
+
+# Security Headers Middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:11434 http://127.0.0.1:11434;"
+    return response
 
 BASE = Path(__file__).resolve().parent
 TEMPL = BASE / "templates"
@@ -75,7 +133,7 @@ def options_page():
 # API
 # -----------------------
 @app.post("/api/chat")
-def api_chat(inp: ChatIn):
+def api_chat(inp: ChatIn, api_key: str = Depends(get_api_key)):
     s = load_settings()
     try:
         answer = asyncio.run(run_chat(inp.message, s, use_history=True))
@@ -86,7 +144,7 @@ def api_chat(inp: ChatIn):
 
 
 @app.post("/api/mcp")
-def api_mcp(inp: MCPIn):
+def api_mcp(inp: MCPIn, api_key: str = Depends(get_api_key)):
     async def _run():
         stack, session = await open_mcp_session()
         try:
@@ -106,7 +164,7 @@ def api_mcp(inp: MCPIn):
 
 
 @app.get("/api/health")
-async def api_health():
+async def api_health(api_key: str = Depends(get_api_key)):
     """
     Salud del sistema:
     - web_ok: este server
@@ -158,7 +216,7 @@ def history_page():
 
 
 @app.get("/api/history")
-def api_history(limit: int = 200, role: str = "", q: str = ""):
+def api_history(limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)):
     """
     Devuelve historial del chat desde SQLite.
     - limit: cantidad de filas (max recomendado 1000)
@@ -191,8 +249,7 @@ def api_history(limit: int = 200, role: str = "", q: str = ""):
 
         rows = con.execute(
             "SELECT id, ts, role, content FROM chat "
-            f"{where_sql} ORDER BY id DESC LIMIT ?",  # nosec B608 usaba param safe limit, where_sql seguro por parametrizacion de arriba
-            (*params, limit),
+            f"{where_sql} ORDER BY id DESC LIMIT ?",
             (*params, limit),
         ).fetchall()
 

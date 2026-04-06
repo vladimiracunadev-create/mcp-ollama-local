@@ -10,6 +10,9 @@ En el archivo `host/settings.py`, consumimos estas variables estándar (que pued
 - `OLLAMA_URL`: Define dónde buscar el cerebro IA (`http://localhost:11434` o tu container `http://host.docker.internal:11434`).
 - `MODEL`: El Target LLM a invocar (`qwen2.5-coder:7b`, `llama3`).
 - `DATA_DIR`: Directorio de Data Compartida de lectura/escritura DB e historial y para el sandbox (`./data` root).
+- `API_KEY`: Clave de acceso para proteger la API (Opcional).
+- `REQUIRE_API_KEY`: Si es `true`, el servidor no arrancará sin una `API_KEY` (Opcional, default `false`).
+- `ALLOWED_ORIGINS`: Lista de dominios permitidos para CORS (Default `localhost:8000`).
 
 ### 2. VS Code / Cursor: Plugins Recomendados
 - **Ruff:** Linter oficial integrado (`charliermarsh.ruff`).

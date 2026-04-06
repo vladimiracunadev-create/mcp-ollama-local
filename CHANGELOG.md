@@ -5,11 +5,24 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
-## [Unreleased]
+## [0.2.0] - 2026-04-06
 
 ### Añadido
-- **Seguridad**: Análisis estático de vulnerabilidades con `bandit` integrado de forma nativa en CI.
-- **Testing**: Medición automática de cobertura de código con `pytest-cov` en el pipeline.
+- **Seguridad (Hardening en 8 Capas)**: Implementación de arquitectura "Defense in Depth":
+    - **Capa 1 (Contenedor)**: Usuario `appuser` (no-root), `HEALTHCHECK` local y tags de imagen fijos.
+    - **Capa 2 (Red)**: Binding de puertos a `127.0.0.1` en Docker Compose para prevenir exposición en LAN.
+    - **Capa 3 (Credenciales)**: Soporte para `API_KEY` y modo obligatorio `REQUIRE_API_KEY`.
+    - **Capa 4 (Web)**: Middlewares para cabeceras de seguridad (`CSP`, `HSTS`, `Referrer`, `Permissions`) y Rate Limiting (60 req/min).
+    - **Capa 5 (MCP)**: Sandbox reforzado con validación de rutas y enmascaramiento de info del sistema host.
+    - **Capa 6 (Auth)**: Validación `X-API-Key` en todos los puntos de entrada de la API.
+    - **Capa 7 (CI/CD)**: Workflow `security.yml` para escaneo de vulnerabilidades y linting en cada push.
+    - **Capa 8 (Supply Chain)**: Configuración de `.gitattributes` para forzar finales de línea `LF`.
+
+### Corregido
+- **API**: Corregido bug en `/api/history` que pasaba parámetros duplicados a SQLite.
+- **Herramientas**: `system_info` ya no filtra rutas absolutas del servidor host.
+
+## [0.1.1] - 2026-03-06
 
 ### Cambiado
 - **Docker**: `Dockerfile` reescrito usando arquitectura Multi-Stage para reducir drásticamente el tamaño final de la imagen, e implementada ejecución de contenedor en modo *Rootless* (usuario `appuser`) maximizando la seguridad.

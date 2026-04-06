@@ -1,8 +1,8 @@
 # 1. Fase de Construcción (Builder)
 FROM python:3.13-slim as builder
 
-# Instalar uv para gestión rápida de paquetes
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+# Instalar uv para gestión rápida de paquetes (Versión fija)
+COPY --from=ghcr.io/astral-sh/uv:0.5.21 /uv /bin/uv
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -37,10 +37,16 @@ COPY --from=builder /app /app
 # Crear usuario rootless y asegurar permisos
 RUN useradd -m appuser \
     && mkdir -p /app/data \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app/data \
+    && chmod -R 755 /app \
+    && chmod -R 777 /app/data
 
-# Cambiar a usuario no-root por seguridad (Rootless container)
-USER appuser
+# Cambiar a usuario no-root por seguridad
+# Instalar curl para el healthcheck (opcional pero recomendado)
+# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Healthcheck usando python para no añadir dependencias extras
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD ["/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
 
 EXPOSE 8000
 
