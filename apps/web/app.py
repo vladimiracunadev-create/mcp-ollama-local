@@ -262,15 +262,17 @@ def api_history(
             where.append("content LIKE ?")
             params.append(f"%{q}%")
 
-        where_sql = ("WHERE " + " AND ".join(where)) if where else ""
-
         limit = max(10, min(int(limit), 1000))
 
-        rows = con.execute(
-            "SELECT id, ts, role, content FROM chat "
-            f"{where_sql} ORDER BY id DESC LIMIT ?",
-            (*params, limit),
-        ).fetchall()
+        query_parts = ["SELECT id, ts, role, content FROM chat"]
+        if where:
+            query_parts.append("WHERE " + " AND ".join(where))
+        query_parts.append("ORDER BY id DESC LIMIT ?")
+
+        query = " ".join(query_parts)
+
+        # Usamos parámetros para evitar SQL Injection (nosec B608)
+        rows = con.execute(query, (*params, limit)).fetchall()
 
         con.close()
 
