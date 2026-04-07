@@ -23,9 +23,6 @@ Ejemplos de comportamiento inaceptable:
 * Publicar información privada de otras personas, como direcciones físicas o correos electrónicos, sin su permiso explícito.
 * Otras conductas que puedan ser razonablemente consideradas como inapropiadas en un entorno profesional.
 
-## Alcance
-Este Código de Conducta aplica dentro de todos los espacios de la comunidad, y también se aplica cuando un individuo representa oficialmente a la comunidad en espacios públicos.
-
 ## 🚫 Aplicación
 Los casos de comportamiento abusivo, acosador o inaceptable pueden ser reportados contactando al encargado del proyecto en [vladimir.acuna.dev@gmail.com](mailto:vladimir.acuna.dev@gmail.com).
 

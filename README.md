@@ -1,4 +1,4 @@
-# ðŸ§  MCP Ollama Local
+# 🧠 MCP Ollama Local
 
 > **Web Local (FastAPI) + IA Local (Ollama) + Herramientas MCP**
 
@@ -47,7 +47,7 @@ graph LR
 
 Para garantizar un rendimiento fluido, se recomiendan las siguientes especificaciones:
 
-*   **CPU**: Apple Silicon (M1/M2/M3) o CPU robusta con AVX2.
+*   **CPU**: Apple Silicon (M1/M2/M3) o CPU con soporte AVX2.
 *   **RAM**: 8 GB (mínimo) / 16 GB (recomendado).
 *   **Ollama**: Instalado y ejecutándose (`ollama serve`).
 *   **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
@@ -76,22 +76,32 @@ Para garantizar un rendimiento fluido, se recomiendan las siguientes especificac
 
 Este proyecto implementa un modelo de seguridad robusto de **8 capas**:
 
-## ðŸ“š DocumentaciÃ³n Completa
+1.  **📦 Contenedor**: Ejecución no-root (`appuser`) y puerto no privilegiado.
+2.  **🌐 Red**: Bind restringido a `127.0.0.1` en Docker Compose.
+3.  **🔑 Credenciales**: Soporte nativo para `API_KEY`.
+4.  **🕸️ Servidor Web**: Cabeceras `CSP`, `HSTS` y Rate Limiting.
+5.  **🛠️ Tools MCP**: Sandbox estricto para acceso a archivos.
+6.  **🔍 Autenticación**: Validación `X-API-Key` obligatoria (opcional).
+7.  **🚀 CI/CD**: Escaneo de vulnerabilidades (`Bandit`/`Pip-Audit`).
+8.  **⚙️ Supply Chain**: Control de integridad vía `.gitattributes`.
 
-- [ðŸ“˜ InstalaciÃ³n (INSTALL.md)](INSTALL.md)
-- [ðŸŽ“ Manual de Principiantes (USER_MANUAL.md)](USER_MANUAL.md)
-- [ðŸ•´ï¸� Logros de IngenierÃ­a (RECRUITER.md)](RECRUITER.md)
-- [ðŸ—ºï¸� Arquitectura de Archivos (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
-- [ðŸ›¡ï¸� PolÃ­tica de Seguridad (SECURITY.md)](SECURITY.md)
-- [âš”ï¸� PrÃ¡cticas Prohibidas (killed.md)](killed.md)
+## 🤝 Comunidad y Contribución
+
+- **📜 Changelog**: Consulta el [CHANGELOG.md](CHANGELOG.md).
+- **✨ Créditos**: Conoce a los autores en [AUTHORS.md](AUTHORS.md).
+- **💡 Contribución**: Lee [CONTRIBUTING.md](CONTRIBUTING.md).
+- **⚖️ Código de Conducta**: Consulta [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ---
-### ðŸ“„ Licencia
-Este proyecto estÃ¡ bajo la Licencia MIT.
-¸� PolÃ­tica de Seguridad (SECURITY.md)](SECURITY.md)
-- [âš–ï¸� CÃ³digo de Conducta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)
-- [ðŸ—ºï¸� Hoja de Ruta (ROADMAP.md)](ROADMAP.md)
 
-## ðŸ“„ Licencia
+## 📚 Documentación Completa
 
-Este proyecto estÃ¡ bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para mÃ¡s informaciÃ³n.
+- [📖 Instalación (INSTALL.md)](INSTALL.md)
+- [🎓 Manual (USER_MANUAL.md)](USER_MANUAL.md)
+- [🕴️ RECRUITER (RECRUITER.md)](RECRUITER.md)
+- [🗺️ Arquitectura (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
+- [🛡️ Seguridad (SECURITY.md)](SECURITY.md)
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.
