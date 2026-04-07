@@ -35,7 +35,7 @@ El flujo de información es directo y local:
 ```mermaid
 graph LR
     User("Usuario (Navegador)") -->|HTTP| FastAPI("Backend FastAPI")
-    FastAPI -->|Check| SQLite[("Historial DB")]
+    FastAPI -->|Check| SQLite["Historial DB"]
     FastAPI -->|Prompt| Ollama("Ollama (LLM Local)")
     Ollama -->|Call Tool?| MCP("MCP Server Tools")
     MCP -->|Result| Ollama

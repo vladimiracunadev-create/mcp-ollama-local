@@ -9,16 +9,16 @@ Este proyecto no es monolítico, está altamente segmentado siguiendo un princip
 
 ```mermaid
 graph TD
-    UI("Navegador/Cliente Web") -->|HTTP POST JSON| API["apps/web/app.py"]
-    API -->|Guarda Chat| DB[("data/chat_history.sqlite")]
+    UI("Navegador/Cliente Web") -->|HTTP POST JSON| API("apps/web/app.py")
+    API -->|Guarda Chat| DB("data/chat_history.sqlite")
     API -->|Llamada Async| CHAT("host/chat_engine.py")
     CHAT -->|Abre Sesión StdIO| BRIDGE("host/mcp_bridge.py")
-    BRIDGE -->|Lanza Subproceso| MCPSERVER["mcp_server/server.py"]
+    BRIDGE -->|Lanza Subproceso| MCPSERVER("mcp_server/server.py")
     CHAT -->|Petición Async LLM| OLLAMA("host/ollama_client.py")
     OLLAMA -->|HTTP REST| OLLAMAD("Ollama Daemon")
     OLLAMA -->|Requiere Tool| CHAT
     CHAT -->|Ejecuta Tool| MCPSERVER
-    MCPSERVER -->|Lee/Escribe (Seguro)| SANDBOX[("data/sandbox/")]
+    MCPSERVER -->|Lee/Escribe (Seguro)| SANDBOX("data/sandbox/")
 ```
 
 ## Exploración por Directorio
