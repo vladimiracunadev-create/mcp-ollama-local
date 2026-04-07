@@ -22,6 +22,7 @@ from host.settings import load_settings
 API_KEY_NAME = "X-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
+
 async def get_api_key(api_key_header: str = Security(api_key_header)):
     settings = load_settings()
     if not settings.api_key:
@@ -29,6 +30,7 @@ async def get_api_key(api_key_header: str = Security(api_key_header)):
     if api_key_header == settings.api_key:
         return api_key_header
     raise HTTPException(status_code=403, detail="Could not validate credentials")
+
 
 # -----------------------
 # App + paths
@@ -50,6 +52,7 @@ RATE_LIMIT_STASH = defaultdict(list)
 RATE_LIMIT_MAX = 60  # requests
 RATE_LIMIT_WINDOW = 60  # seconds
 
+
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     client_ip = request.client.host
@@ -62,11 +65,12 @@ async def rate_limit_middleware(request: Request, call_next):
     if len(RATE_LIMIT_STASH[client_ip]) >= RATE_LIMIT_MAX:
         return JSONResponse(
             status_code=429,
-            content={"ok": False, "error": "Rate limit exceeded. Slow down."}
+            content={"ok": False, "error": "Rate limit exceeded. Slow down."},
         )
 
     RATE_LIMIT_STASH[client_ip].append(now)
     return await call_next(request)
+
 
 # Security Headers Middleware
 @app.middleware("http")
@@ -86,6 +90,7 @@ async def add_security_headers(request: Request, call_next):
     )
     response.headers["Content-Security-Policy"] = csp
     return response
+
 
 BASE = Path(__file__).resolve().parent
 TEMPL = BASE / "templates"
@@ -229,10 +234,7 @@ def history_page():
 
 @app.get("/api/history")
 def api_history(
-    limit: int = 200,
-    role: str = "",
-    q: str = "",
-    api_key: str = Depends(get_api_key)
+    limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)
 ):
     """
     Devuelve historial del chat desde SQLite.

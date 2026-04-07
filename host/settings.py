@@ -25,7 +25,9 @@ def load_settings() -> Settings:
     model = os.getenv("MODEL", "qwen3:8b")
     api_key = os.getenv("API_KEY")
     require_api_key = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
-    allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000").split(",")
+    allowed_origins = os.getenv(
+        "ALLOWED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
+    ).split(",")
     history_db = data_dir / "chat_history.sqlite"
 
     if require_api_key and not api_key:
