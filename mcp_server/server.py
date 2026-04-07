@@ -17,9 +17,9 @@ def safe_sandbox_path(rel: str) -> Path:
     # Evitar que suba niveles con .. antes de resolver
     if ".." in rel:
         raise ValueError("Ruta con '..' detectada (bloqueado).")
-    
+
     p = (SANDBOX / rel).resolve()
-    
+
     # Verificación robusta: el sandbox debe ser el prefijo común
     if os.path.commonpath([str(p), str(SANDBOX)]) != str(SANDBOX):
         raise ValueError("Ruta fuera de sandbox (bloqueado).")

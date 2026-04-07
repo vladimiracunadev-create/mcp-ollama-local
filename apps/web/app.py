@@ -4,6 +4,7 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
+import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -53,13 +54,17 @@ RATE_LIMIT_WINDOW = 60  # seconds
 async def rate_limit_middleware(request: Request, call_next):
     client_ip = request.client.host
     now = time.time()
-    
-    # Limpiar ventanas antiguas
-    RATE_LIMIT_STASH[client_ip] = [t for t in RATE_LIMIT_STASH[client_ip] if now - t < RATE_LIMIT_WINDOW]
-    
+
+    RATE_LIMIT_STASH[client_ip] = [
+        t for t in RATE_LIMIT_STASH[client_ip] if now - t < RATE_LIMIT_WINDOW
+    ]
+
     if len(RATE_LIMIT_STASH[client_ip]) >= RATE_LIMIT_MAX:
-        return JSONResponse(status_code=429, content={"ok": False, "error": "Rate limit exceeded. Slow down."})
-    
+        return JSONResponse(
+            status_code=429,
+            content={"ok": False, "error": "Rate limit exceeded. Slow down."}
+        )
+
     RATE_LIMIT_STASH[client_ip].append(now)
     return await call_next(request)
 
@@ -72,7 +77,14 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:11434 http://127.0.0.1:11434;"
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "connect-src 'self' http://localhost:11434 http://127.0.0.1:11434;"
+    )
+    response.headers["Content-Security-Policy"] = csp
     return response
 
 BASE = Path(__file__).resolve().parent
@@ -216,7 +228,12 @@ def history_page():
 
 
 @app.get("/api/history")
-def api_history(limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)):
+def api_history(
+    limit: int = 200,
+    role: str = "",
+    q: str = "",
+    api_key: str = Depends(get_api_key)
+):
     """
     Devuelve historial del chat desde SQLite.
     - limit: cantidad de filas (max recomendado 1000)
