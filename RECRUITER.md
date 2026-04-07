@@ -1,5 +1,6 @@
-# RECRUITER 
+# 👔 RECRUITER (Logros de Ingeniería)
 
+> [!TIP]
 > Este documento responde a la pregunta de Técnicos, Headhunters y Engineering Managers: **"¿Por qué este repo es relevante entre los millones creados con IA, y qué habilidades tangibles demuestra este desarrollador?"**.
 
 ## El "Pitch" Ejecutivo
@@ -41,3 +42,8 @@ He transformado una herramienta local en una aplicación "Hardened" mediante 8 c
 * Mis proyectos son reproducibles; no dependen del "en mi máquina funciona".
 
 Puntualmente busco **Sistemas Desafiantes, Arquitecturas de Solución o Roles Bridge Technical Lead/Operations**.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [FILE_ARCHITECTURE.md](FILE_ARCHITECTURE.md) | [SYSTEM_SPECS.md](SYSTEM_SPECS.md)

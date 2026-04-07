@@ -1,6 +1,7 @@
-# ¿Cómo Activar Modelos Locales IA (Ollama) en esta Arquitectura?
+# 🤖 ¿Cómo Activar Modelos Locales IA (Ollama) en esta Arquitectura?
 
-La gracia de **mcp-ollama-local** es que desacopla la descarga y ejecución pura del modelo (gestionado nativamente por Ollama) del consumo orquestado usando la estandarización Model Context Protocol (gestionado aquí en FastAPI).
+> [!NOTE]
+> La gracia de **mcp-ollama-local** es que desacopla la descarga y ejecución pura del modelo (gestionado nativamente por Ollama) del consumo orquestado usando la estandarización Model Context Protocol (gestionado aquí en FastAPI).
 
 Esta es la guía estandarizada para activar un modelo, desde la descarga hasta tenerlo funcional consumiendo herramientas locales (MCP).
 
@@ -48,3 +49,8 @@ make run
 ```
 
 Al navegar a `http://localhost:8000/`, verás el chat que internamente ya ha enlazado el sub-proceso MCP al modelo que hayas seleccionado en tu `.env`. ¡A disfrutar la IA Local y privada!
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [INSTALL.md](INSTALL.md) | [USER_MANUAL.md](USER_MANUAL.md)

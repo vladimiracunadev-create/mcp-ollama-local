@@ -1,6 +1,7 @@
-# Guía de Contribución
+# 🤝 Guía de Contribución
 
-¡Gracias por considerar contribuir a este ecosistema! Al ser parte de un ecosistema diseñado bajo los estándares de **observabilidad**, **reproducibilidad**, **calidad local-first** e **idempotencia**, mantenemos expectativas altas sobre la integridad del código para mantener este portafolio como un reflejo de ingeniería moderna.
+> [!NOTE]
+> ¡Gracias por considerar contribuir a este ecosistema! Al ser parte de un ecosistema diseñado bajo los estándares de **observabilidad**, **reproducibilidad**, **calidad local-first** e **idempotencia**, mantenemos expectativas altas sobre la integridad del código para mantener este portafolio como un reflejo de ingeniería moderna.
 
 ## Tipos de Contribuciones que Buscamos
 
@@ -39,3 +40,8 @@ Este proyecto usa un flujo estandarizado basado en ramas de características:
 *   **Test-Driven Development (opcional pero recomendado)**: Incluye comandos para correr tus pruebas. Si el repositorio tiene Action de GitHub con `mypy` o `bandit`, asegúrate de que tus modificaciones pasen localmente (`make test`, `make lint` o scripts disponibles en el ecosistema).
 *   **Docker-first**: Cualquier dependencia requerida debe estar documentada y disponible mediante `docker-compose.yml` para levantar la arquitectura en menos de 60 segundos u obviar la fricción del setup local.
 *   **Documentación obligatoria**: Si es un cambio mayor, no olvides la documentación en el README y si es aplicable, un diagrama explicativo.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | [CHANGELOG.md](CHANGELOG.md)

@@ -1,6 +1,7 @@
 # 📘 Manual de Usuario para Principiantes
 
-¡Bienvenido! Este documento está diseñado para ayudarte a entender qué es este proyecto, por qué existe y cómo puedes sacarle provecho, incluso si no eres un experto en programación o Inteligencia Artificial.
+> [!NOTE]
+> ¡Bienvenido! Este documento está diseñado para ayudarte a entender qué es este proyecto, por qué existe y cómo puedes sacarle provecho, incluso si no eres un experto en programación o Inteligencia Artificial.
 
 ---
 
@@ -87,3 +88,8 @@ A: Para que no tengas que instalar Python, librerías, dependencias, etc. Solo i
 ---
 
 ¡Esperamos que disfrutes tu propia IA personal!
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [INSTALL.md](INSTALL.md) | [COMO_ACTIVAR_MODELOS.md](COMO_ACTIVAR_MODELOS.md)

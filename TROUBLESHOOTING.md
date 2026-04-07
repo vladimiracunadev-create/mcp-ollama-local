@@ -1,6 +1,7 @@
 # 🔧 Guía de Resolución de Problemas (Troubleshooting)
 
-Esta guía documenta problemas comunes y sus soluciones basadas en casos reales de despliegue.
+> [!NOTE]
+> Esta guía documenta problemas comunes y sus soluciones basadas en casos reales de despliegue.
 
 ---
 
@@ -118,4 +119,9 @@ docker compose logs --tail=20 app
 Si ninguna solución funciona:
 1. Revisa los logs completos: `docker compose logs app`
 2. Verifica versiones: `ollama --version` y `docker --version`
-3. Abre un issue en GitHub con los logs y tu configuración
+3. [Abre un issue en GitHub](https://github.com/vladimiracunadev-create/mcp-ollama-local/issues) con los logs y tu configuración
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [INSTALL.md](INSTALL.md) | [USER_MANUAL.md](USER_MANUAL.md)

@@ -1,5 +1,6 @@
-# File Architecture (Mapa de Componentes)
+# 🗺️ File Architecture (Mapa de Componentes)
 
+> [!NOTE]
 > **Propósito:** Ofrecer un "mapa mental" instantáneo de cómo interactúan las piezas en este ecosistema (UI FastAPI → Conector Async → Sandbox de Herramientas MCP → Ollama).
 
 Este proyecto no es monolítico, está altamente segmentado siguiendo un principio de responsabilidades separadas *(Separation of Concerns)* entre interfaz, orquestador, y ejecución segura.
@@ -48,3 +49,8 @@ La **Capa Persistente Local**. Está mapeada externamente a los *volumes* de Doc
 - `Dockerfile`: Orquestador Multi-Layer de Docker con compilación en fases, Drop de privilegios Linux (*Rootless appuser*) y `HEALTHCHECK`.
 - `.github/workflows/security.yml`: Pipeline de escaneo de seguridad y auditoría de dependencias.
 - `.gitattributes`: Forzado de finales de línea `LF` para consistencia en ejecución Docker/Linux.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [SYSTEM_SPECS.md](SYSTEM_SPECS.md) | [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)

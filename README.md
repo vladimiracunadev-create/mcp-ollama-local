@@ -1,11 +1,11 @@
-# 🧠 MCP Ollama Local
+# ðŸ§  MCP Ollama Local
 
 > **Web Local (FastAPI) + IA Local (Ollama) + Herramientas MCP**
 
 ![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
-![CI](https://github.com/vladimiracunadev-create/mcp-ollama-local/actions/workflows/ci.yml/badge.svg?branch=main)
+![Hardening](https://img.shields.io/badge/security-8--layers-blueviolet.svg)
 
 ---
 
@@ -13,21 +13,22 @@
 
 Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles capacidades reales mediante herramientas seguras (acceso a archivos, búsqueda, información del sistema), todo con persistencia en SQLite.
 
+> [!TIP]
 > 🎓 **¿Nuevo en IA o Docker?** Consulta nuestro [Manual para Principiantes (USER_MANUAL.md)](USER_MANUAL.md) para entender conceptos básicos y por qué esto es útil para ti.
 
 ---
 
 ## 🚀 Características Principales
 
-- **Chat Conversacional**: Interfaz web limpia para interactuar con tus modelos locales.
-- **Protocolo MCP**: Integración nativa para expandir las capacidades del modelo (extensible).
-- **Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
-- **Historial Persistente**: Guardado de conversaciones en SQLite.
-- **Seguridad en 8 Capas**: Protección integral desde el contenedor hasta la red y la aplicación.
-- **Privacidad Total**: Todo corre en tu máquina (`localhost`), ideal para datos sensibles.
-- **Cloud Native**: Listo para Docker y Kubernetes (K8s) desde el primer día.
+- **🗣️ Chat Conversacional**: Interfaz web limpia para interactuar con tus modelos locales.
+- **🔌 Protocolo MCP**: Integración nativa para expandir las capacidades del modelo.
+- **🛠️ Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
+- **💾 Historial Persistente**: Guardado de conversaciones en SQLite.
+- **🛡️ Seguridad en 8 Capas**: Protección integral desde el contenedor hasta la red.
+- **🔒 Privacidad Total**: Todo corre en tu máquina (`localhost`), 100% privado.
+- **🐳 Cloud Native**: Listo para Docker y Kubernetes (K8s).
 
-## 🛠 Arquitectura
+## 🏗️ Arquitectura
 
 El flujo de información es directo y local:
 
@@ -42,148 +43,55 @@ graph LR
     FastAPI -->|HTML/JSON| User
 ```
 
-## 💻 Especificaciones del Sistema
+## 📊 Requisitos del Sistema
 
-Para garantizar un rendimiento fluido, especialmente al ejecutar modelos locales de IA, se recomiendan las siguientes especificaciones:
+Para garantizar un rendimiento fluido, se recomiendan las siguientes especificaciones:
 
-### Hardware Recomendado
-- **Procesador**: Apple Silicon (M1/M2/M3) o CPU robusta con soporte AVX2.
-- **RAM**:
-  - Mínimo: **8 GB** (para modelos cuantizados de 7B parámetros o menores).
-  - Recomendado: **16 GB** o más (para modelos de 7B+ con mayor contexto).
-- **Almacenamiento**: ~10 GB libres para modelos y dependencias.
+*   **CPU**: Apple Silicon (M1/M2/M3) o CPU robusta con AVX2.
+*   **RAM**: 8 GB (mínimo) / 16 GB (recomendado).
+*   **Ollama**: Instalado y ejecutándose (`ollama serve`).
+*   **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
 
-### Requisitos de Software
-- **Sistema Operativo**: macOS (optimizado), Linux, o Windows (vía WSL2).
-- **Python**: Versión **3.13** o superior.
-- **Ollama**: Última versión estable para la ejecución del modelo.
-- **Git**: Para clonar el repositorio.
+## 📥 Modos de Despliegue
 
-## 📋 Pre-requisitos de Instalación
+| Entorno | Comando Rápido |
+| :--- | :--- |
+| **💻 Local** | `make install && make run` |
+| **🐳 Docker** | `docker compose up -d` |
+| **☸️ Kubernetes** | `kubectl apply -f k8s/` |
 
-1.  **Ollama**: Instalado y ejecutándose en segundo plano (`ollama serve`).
-2.  **UV**: Gestor de paquetes de Python de alto rendimiento (altamente recomendado) o `pip` estándar.
-3.  **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
+> [!NOTE]
+> Para instrucciones detalladas, consulta la [Guía de Instalación (INSTALL.md)](INSTALL.md).
 
-## 🚀 Modos de Despliegue
-
-Este proyecto es extremadamente flexible y puede desplegarse donde lo necesites. Para instrucciones detalladas, consulta [📘 GUÍA DE INSTALACIÓN (INSTALL.md)](INSTALL.md).
-
-| Entorno | Ideal para... | Comando Rápido |
-| :--- | :--- | :--- |
-| **💻 Local** | Desarrollo, pruebas rápidas | `make run` |
-| **🐳 Docker** | Uso aislado, producción simple | `docker compose up -d` |
-| **☸️ Kubernetes** | Escalado, clústeres domésticos/prod | `kubectl apply -f k8s/` |
-
-## ⚡️ Inicio Rápido (Local)
-
-Este proyecto incluye un `Makefile` para facilitar todas las tareas locales.
-
-1.  **Clonar y configurar entorno**:
-    ```bash
-    git clone https://github.com/vladimiracunadev-create/mcp-ollama-local.git
-    cd mcp-ollama-local
-    make install
-    ```
-
-2.  **Asegurar que Ollama corre**:
-    ```bash
-    ollama serve
-    # En otra terminal, descarga un modelo si no tienes uno
-    ollama pull qwen2.5-coder:7b
-    ```
-
-3.  **Ejecutar la aplicación**:
-    ```bash
-    make run
-    # O alternativamente: python main.py
-    ```
-
-4.  **Abrir en navegador**:
-    Visita [http://localhost:8000](http://localhost:8000)
-
-## 🧰 Comandos Disponibles
-
-Usa `make help` para ver la lista completa. Los más comunes son:
+## 🧮 Comandos del Makefile
 
 | Comando | Descripción |
 | :--- | :--- |
-| `make install` | Instala dependencias y configura el entorno virtual. |
-| `make run` | Levanta el servidor de desarrollo en puerto 8000. |
-| `make lint` | Verifica estilo y errores con **Ruff**. |
-| `make format` | Corrige formato de código automáticamente. |
-| `make test` | Ejecuta las pruebas unitarias con **Pytest**. |
-| `make clean` | Elimina archivos temporales y cachés. |
+| `make install` | Configura entorno y dependencias. |
+| `make run` | Inicia el servidor en puerto 8000. |
+| `make lint` | Ejecuta auditoría de código con **Ruff/Bandit**. |
+| `make test` | Ejecuta la suite de pruebas con **Pytest**. |
 
 ## 🛡️ Seguridad (Defensa en Profundidad)
 
-Este proyecto implementa un modelo de seguridad de **8 capas**:
+Este proyecto implementa un modelo de seguridad robusto de **8 capas**:
 
-1.  **Contenedor**: Ejecución como `appuser` (no-root) y en puerto no privilegiado.
-2.  **Red**: Bind de puertos restringido a `127.0.0.1` en Docker Compose.
-3.  **Credenciales**: Soporte para `API_KEY` y modo obligatorio.
-4.  **Servidor Web**: Cabeceras `CSP`, `HSTS`, `XSS Protection` y Rate Limiting (60 req/min).
-5.  **Tools MCP**: Sandbox estricto con validación de rutas y enmascaramiento de info del sistema.
-6.  **Autenticación**: Validación `X-API-Key` en todos los endpoints de la API.
-7.  **CI/CD**: Escaneo de vulnerabilidades y linting automatizado en GitHub Actions.
-8.  **Supply Chain**: Control de finales de línea `LF` vía `.gitattributes`.
+## ðŸ“š DocumentaciÃ³n Completa
 
-> ⚠️ **Nota**: Para uso local, la seguridad es opcional, pero se recomienda activar `API_KEY` si se expone el servicio en redes compartidas.
+- [ðŸ“˜ InstalaciÃ³n (INSTALL.md)](INSTALL.md)
+- [ðŸŽ“ Manual de Principiantes (USER_MANUAL.md)](USER_MANUAL.md)
+- [ðŸ•´ï¸� Logros de IngenierÃ­a (RECRUITER.md)](RECRUITER.md)
+- [ðŸ—ºï¸� Arquitectura de Archivos (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
+- [ðŸ›¡ï¸� PolÃ­tica de Seguridad (SECURITY.md)](SECURITY.md)
+- [âš”ï¸� PrÃ¡cticas Prohibidas (killed.md)](killed.md)
 
-## 📂 Estructura del Proyecto
+---
+### ðŸ“„ Licencia
+Este proyecto estÃ¡ bajo la Licencia MIT.
+¸� PolÃ­tica de Seguridad (SECURITY.md)](SECURITY.md)
+- [âš–ï¸� CÃ³digo de Conducta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)
+- [ðŸ—ºï¸� Hoja de Ruta (ROADMAP.md)](ROADMAP.md)
 
-```text
-mcp-ollama-local/
-├── .github/            # Workflows de CI (GitHub Actions)
-├── apps/
-│   └── web/            # Aplicación FastAPI y frontend (+ templates/static)
-├── data/               # Base de datos SQLite y logs (persistente)
-├── host/               # Lógica de interacción y configuración
-├── k8s/                # Manifiestos de Kubernetes
-├── mcp_server/         # Servidor MCP y herramientas
-├── tests/              # Suite de pruebas automatizadas
-├── CHANGELOG.md        # Historial de versiones y cambios
-├── Dockerfile          # Definición de imagen de producción
-├── INSTALL.md          # Guía de instalación detallada
-├── Makefile            # Automatización de tareas (run, test, lint)
-├── docker-compose.yml  # Entorno local con Docker
-├── main.py             # Punto de entrada alternativo
-└── pyproject.toml      # Dependencias y configuración (Ruff/Pytest)
-```
+## ðŸ“„ Licencia
 
-## 🤝 Comunidad
-Este proyecto se rige por un [Código de Conducta](CODE_OF_CONDUCT.md). Al participar, se espera que mantengas este código.
-
-- **Historial de Cambios**: Consulta el [CHANGELOG.md](CHANGELOG.md) para ver la evolución del proyecto.
-- **Créditos**: Conoce a los creadores en [AUTHORS.md](AUTHORS.md).
-- **Contribuciones**: Lee [CONTRIBUTING.md](CONTRIBUTING.md) antes de enviar tu primer PR.
-- **Problemas Comunes**: Si encuentras errores, revisa [TROUBLESHOOTING.md](TROUBLESHOOTING.md) primero.
-
-## 📚 Documentación del Proyecto
-
-Como parte de los estándares de este ecosistema, la documentación detallada se divide en:
-
-### 📖 Guías para Usuarios
-- [📘 Guía de Instalación y Despliegue (INSTALL.md)](INSTALL.md)
-- [🎓 Manual de Principiantes (USER_MANUAL.md)](USER_MANUAL.md)
-- [🔄 Guía de Activación de Modelos (COMO_ACTIVAR_MODELOS.md)](COMO_ACTIVAR_MODELOS.md)
-- [❓ Problemas Comunes (TROUBLESHOOTING.md)](TROUBLESHOOTING.md)
-
-### 🏗️ Arquitectura y Evaluadores (Reclutadores/Tech Leads)
-- [🕴️ Logros de Ingeniería y Reclutadores (RECRUITER.md)](RECRUITER.md)
-- [🗺️ Arquitectura de Archivos (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
-- [📊 Especificaciones de Sistema y Hardware (SYSTEM_SPECS.md)](SYSTEM_SPECS.md)
-- [📖 Glosario Técnico del Proyecto (GLOSSARY.md)](GLOSSARY.md)
-- [⚔️ Prácticas Prohibidas y Antipatrones (killed.md)](killed.md)
-
-### ⚙️ Estandarización de Desarrollo (Comunidad)
-- [⚙️ Configuración del Entorno Dev (ENVIRONMENT_SETUP.md)](ENVIRONMENT_SETUP.md)
-- [📜 Historial de Cambios (CHANGELOG.md)](CHANGELOG.md)
-- [🤝 Guía de Contribución (CONTRIBUTING.md)](CONTRIBUTING.md)
-- [🛡️ Política de Seguridad (SECURITY.md)](SECURITY.md)
-- [⚖️ Código de Conducta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)
-- [🗺️ Hoja de Ruta (ROADMAP.md)](ROADMAP.md)
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.
+Este proyecto estÃ¡ bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para mÃ¡s informaciÃ³n.

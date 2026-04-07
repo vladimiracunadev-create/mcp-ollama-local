@@ -1,6 +1,7 @@
-# Glosario Técnico del Proyecto
+# 📖 Glosario Técnico del Proyecto
 
-Si el flujo técnico de este ecosistema te resulta ajeno en algunos aspectos, aquí tienes un diccionario práctico:
+> [!TIP]
+> Si el flujo técnico de este ecosistema te resulta ajeno en algunos aspectos, aquí tienes un diccionario práctico:
 
 | Término | Significado en este Proyecto |
 | --- | --- |
@@ -12,3 +13,8 @@ Si el flujo técnico de este ecosistema te resulta ajeno en algunos aspectos, aq
 | **Liveness / Readiness Probe** | Endpoint nativo `/api/health` para que el orquestador (*Kubernetes*) confirme de forma sistemática que la IA está despierta (*Liveness*) o si ha terminado de cargar antes de enviarle clientes (*Readiness*). |
 | **Pydantic** | Nuestro validador de configuración estricto pre-carga, para rechazar inputs o `.env` malformados. |
 | **uv** | Nuestro gestor de paquetes alterno a Pip/Poetry/Pipenv. Está escrito velozmente y garantiza reproducciones exactas de dependencias usando su manifiesto `uv.lock`. |
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [USER_MANUAL.md](USER_MANUAL.md) | [FILE_ARCHITECTURE.md](FILE_ARCHITECTURE.md)

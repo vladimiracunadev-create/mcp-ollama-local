@@ -2,7 +2,12 @@
 
 Este documento detalla cómo ejecutar `mcp-ollama-local` en diferentes entornos.
 
-## Opción 1: Local (Bare Metal)
+> [!TIP]
+> Si eres nuevo en IA local, te recomendamos la **Opción 2 (Docker)** para evitar complicaciones con dependencias de Python.
+
+---
+
+## 💻 Opción 1: Local (Bare Metal)
 Recomendado para desarrollo o uso personal rápido en Mac/Linux.
 
 ### Requisitos
@@ -39,8 +44,11 @@ MODEL=llama3:8b make run
 
 ---
 
-## Opción 2: Docker (Recomendado)
+## 🐳 Opción 2: Docker (Recomendado)
 Ideal para aislar la aplicación y sus dependencias.
+
+> [!NOTE]
+> Esta opción ya incluye configuraciones de seguridad rootless y healthchecks automáticos.
 
 ### Requisitos
 - Docker y Docker Compose
@@ -62,13 +70,18 @@ Ideal para aislar la aplicación y sus dependencias.
 
 ### ⚠️ Conexión con Ollama en Docker
 La configuración por defecto asume que puedes acceder al host vía `host.docker.internal`.
-- **Mac/Windows**: Funciona automáticamente.
-- **Linux**: Debes asegurarte de que Docker soporte `host-gateway` (incluido en `docker-compose.yml`). Si Ollama solo escucha en `127.0.0.1`, configúralo para escuchar en `0.0.0.0` con `OLLAMA_HOST=0.0.0.0 ollama serve`.
+
+> [!TIP]
+> - **Mac/Windows**: Funciona automáticamente.
+> - **Linux**: Debes asegureras de que Docker soporte `host-gateway` (incluido en `docker-compose.yml`). Si Ollama solo escucha en `127.0.0.1`, configúralo para escuchar en `0.0.0.0` con `OLLAMA_HOST=0.0.0.0 ollama serve`.
 
 ### 📥 Descarga del Modelo (REQUERIDO)
 Antes de usar la aplicación, **debes descargar un modelo LLM** en tu máquina host:
+
+> [!IMPORTANT]
+> Los modelos son archivos grandes (5-20GB) que se almacenan localmente. NO se incluyen en el repositorio de GitHub. Debes tener Ollama instalado primero.
 ```bash
-ollama pull qwen3:8b
+ollama pull qwen2.5-coder:7b
 # O cualquier otro modelo compatible
 ```
 **Nota**: Los modelos son archivos grandes (5-20GB) que se almacenan localmente. NO se incluyen en el repositorio de GitHub.
@@ -100,3 +113,8 @@ Para despliegues escalables o en clústeres domésticos.
 
 ### Nota sobre Persistencia en K8s
 El despliegue usa un `PersistentVolumeClaim` (PVC) de 1GB. Asegúrate de tener configurado un StorageClass por defecto en tu clúster.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [USER_MANUAL.md](USER_MANUAL.md) | [SECURITY.md](SECURITY.md)

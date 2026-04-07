@@ -1,6 +1,7 @@
-# Environment Setup (Entorno de Desarrollo)
+# ⚙️ Environment Setup (Entorno de Desarrollo)
 
-Este proyecto está construido para reducir la fricción inicial ("Time to First Interaction").
+> [!NOTE]
+> Este proyecto está construido para reducir la fricción inicial ("Time to First Interaction").
 Aquí detallamos los requisitos, herramientas secundarias y la configuración técnica del proyecto para contribuciones sólidas.
 
 ## Configuración de Entorno (IDE y CLI)
@@ -25,3 +26,8 @@ Usamos **`uv`** escrito en Rust para la gestión de lockfiles (`uv.lock`) en vez
 
 ## Configuración Especial: Model Context Protocol (MCP) C++ / Rust
 Si añades tools más densas de sistema, asegúrate de utilizar el package nativo `mcp` que hemos seteado el cual levanta subprocesos de lectura usando standard IO (`stdio`).
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [INSTALL.md](INSTALL.md) | [CONTRIBUTING.md](CONTRIBUTING.md)

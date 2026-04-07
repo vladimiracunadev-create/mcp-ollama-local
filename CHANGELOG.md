@@ -1,4 +1,4 @@
-# Changelog
+# 📜 Changelog
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
@@ -47,3 +47,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ### Corregido
 - **Linting**: Arreglados imports desordenados y líneas largas en múltiples archivos.
 - **Docs**: Corregidos enlaces rotos y errores tipográficos en README.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [ROADMAP.md](ROADMAP.md) | [AUTHORS.md](AUTHORS.md)

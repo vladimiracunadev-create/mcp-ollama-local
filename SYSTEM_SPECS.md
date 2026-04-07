@@ -1,6 +1,7 @@
-# Especificaciones del Sistema y Servidor
+# 📊 Especificaciones del Sistema y Servidor
 
-Para correr LLMs locales que además interactúan como "Agentes" (consumiendo herramientas de Model Context Protocol de Python Subprocess de manera asincrónica), los sistemas demandan características concretas.
+> [!NOTE]
+> Para correr LLMs locales que además interactúan como "Agentes" (consumiendo herramientas de Model Context Protocol de Python Subprocess de manera asincrónica), los sistemas demandan características concretas.
 
 ## 1. Hardware Mínimo Esperable (Bare-Metal/Laptop)
 
@@ -30,3 +31,8 @@ El sistema opera bajo un modelo de **Defensa en Profundidad** para entornos loca
 3. **App Web**: Middlewares de Cabeceras de Seguridad y Rate Limiting (60 req/min).
 4. **Auth**: Capa `X-API-Key` opcional u obligatoria según `.env`.
 5. **MCP**: Validación estricta de rutas y sandbox enjaulado en `data/sandbox`.
+
+---
+
+### 📚 Documentación Relacionada
+- [README.md](README.md) | [FILE_ARCHITECTURE.md](FILE_ARCHITECTURE.md) | [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
