@@ -42,6 +42,41 @@ Hemos implementado un modelo de seguridad basado en **Defense in Depth**:
 7. **CI/CD**: Pipeline automatizado en GitHub Actions para detectar vulnerabilidades en dependencias y fallos de linting.
 8. **Supply Chain**: Consistencia de line endings (`LF`) forzada vía `.gitattributes` para evitar errores de ejecución en Docker.
 
+### Modelo Visual - Defense in Depth
+
+```mermaid
+flowchart TB
+    subgraph L8["Capa 8 - Supply Chain"]
+        SC["gitattributes LF forzado"]
+    end
+    subgraph L7["Capa 7 - CI/CD"]
+        CI["GitHub Actions - Bandit y Pip-Audit"]
+    end
+    subgraph L6["Capa 6 - Autenticacion"]
+        AK["X-API-Key en endpoints sensibles"]
+    end
+    subgraph L5["Capa 5 - Sandbox MCP"]
+        SB["Acceso restringido a data/sandbox"]
+    end
+    subgraph L4["Capa 4 - Servidor Web"]
+        SW["CSP + HSTS + Rate Limit 60 req/min"]
+    end
+    subgraph L3["Capa 3 - Credenciales"]
+        CR["API_KEY configurable en .env"]
+    end
+    subgraph L2["Capa 2 - Red"]
+        NW["Bind exclusivo a 127.0.0.1"]
+    end
+    subgraph L1["Capa 1 - Contenedor"]
+        CT["appuser no-root + HEALTHCHECK"]
+    end
+
+    L8 --> L7 --> L6 --> L5 --> L4 --> L3 --> L2 --> L1
+```
+
+> [!NOTE]
+> Cada capa actua de forma independiente. Si una falla, las demas siguen protegiendo el sistema.
+
 ---
 
 ### 📚 Documentación Relacionada

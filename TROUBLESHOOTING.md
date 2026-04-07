@@ -3,6 +3,44 @@
 > [!NOTE]
 > Esta guía documenta problemas comunes y sus soluciones basadas en casos reales de despliegue.
 
+## Arbol de Diagnostico Rapido
+
+Usa este diagrama para identificar tu problema antes de leer los pasos detallados:
+
+```mermaid
+flowchart TD
+    START["Tengo un problema"] --> Q1{"La app se\ninica correctamente?"}
+
+    Q1 -->|No| Q2{"Error al hacer\ndocker compose up?"}
+    Q1 -->|Si| Q3{"El chat\nresponde?"}
+
+    Q2 -->|Si - error xattr| FIX2["Problema 2: Archivos ._* de macOS\nfind . -name '._*' -delete"]
+    Q2 -->|No - otro error| FIX_LOG["Revisa logs\ndocker compose logs app"]
+
+    Q3 -->|No - error 404| Q4{"Ollama esta\ncorriendo?"}
+    Q3 -->|Si - responde lento| FIX_MODEL["El modelo puede ser\ndemasiado grande\nPrueba con uno menor"]
+    Q3 -->|No - pantalla en blanco| FIX_BROWSER["Recarga con CTRL+SHIFT+R\no prueba otro navegador"]
+
+    Q4 -->|No| FIX_OLLAMA["Inicia Ollama\nOLLAMA_HOST=0.0.0.0 ollama serve"]
+    Q4 -->|Si pero falla| Q5{"Ollama escucha\nen 0.0.0.0?"}
+
+    Q5 -->|No - escucha en 127.0.0.1| FIX1["Problema 1A: Reinicia con\nOLLAMA_HOST=0.0.0.0:11434 ollama serve"]
+    Q5 -->|Si| Q6{"El modelo esta\ndescargado?"}
+
+    Q6 -->|No| FIX1B["Problema 1B: Descarga el modelo\nollama pull qwen3:8b"]
+    Q6 -->|Si| FIX_ISSUE["Abre un Issue en GitHub\ncon los logs completos"]
+
+    style START fill:#4a9eff,color:#fff
+    style FIX2 fill:#10b981,color:#fff
+    style FIX1 fill:#10b981,color:#fff
+    style FIX1B fill:#10b981,color:#fff
+    style FIX_OLLAMA fill:#10b981,color:#fff
+    style FIX_LOG fill:#f59e0b,color:#fff
+    style FIX_ISSUE fill:#ef4444,color:#fff
+    style FIX_MODEL fill:#8b5cf6,color:#fff
+    style FIX_BROWSER fill:#8b5cf6,color:#fff
+```
+
 ---
 
 ## Problema 1: Error 404 al conectar con Ollama desde Docker

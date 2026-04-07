@@ -39,6 +39,46 @@ Para tener un asistente inteligente (tipo Jarvis o ChatGPT) que:
 
 ---
 
+## 🔄 Flujo Completo de una Conversacion
+
+Este diagrama muestra **exactamente** lo que ocurre cuando escribes un mensaje. Dos caminos posibles: respuesta directa o con uso de herramienta.
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant W as Navegador Web
+    participant F as FastAPI Backend
+    participant DB as SQLite Historial
+    participant O as Ollama LLM
+    participant M as MCP Server
+
+    U->>W: Escribe mensaje en el chat
+    W->>F: POST /api/chat con el mensaje
+    F->>DB: Guarda mensaje en historial
+    F->>O: Envia prompt + historial al LLM
+
+    alt Respuesta directa - sin herramienta
+        O-->>F: Devuelve texto de respuesta
+        F->>DB: Guarda respuesta en historial
+        F-->>W: Retorna respuesta JSON
+        W-->>U: Muestra mensaje del asistente
+    else La IA necesita usar una herramienta
+        O-->>F: Solicita llamada a Tool - ej. list_files
+        F->>M: Ejecuta la herramienta solicitada
+        M-->>F: Retorna resultado de la herramienta
+        F->>O: Envia resultado al LLM para procesar
+        O-->>F: Devuelve respuesta final con datos reales
+        F->>DB: Guarda respuesta en historial
+        F-->>W: Retorna respuesta JSON
+        W-->>U: Muestra respuesta con datos de tu sistema
+    end
+```
+
+> [!TIP]
+> El camino con **herramienta** ocurre cuando le pides a la IA que busque archivos, liste directorios o consulte info del sistema. El camino **directo** es para preguntas generales de conocimiento.
+
+---
+
 ## 🚀 ¿Cómo se usa?
 
 Una vez instalado (siguiendo nuestra [Guía de Instalación](INSTALL.md)), verás una pantalla de chat en tu navegador.
