@@ -1,5 +1,7 @@
 # 🧠 MCP Ollama Local
 
+[![SafeSkill 89/100](https://img.shields.io/badge/SafeSkill-89%2F100_Passes%20with%20Notes-yellow)](https://safeskill.dev/scan/vladimiracunadev-create-mcp-ollama-local)
+
 > **Web Local (FastAPI) + IA Local (Ollama) + Herramientas MCP**
 
 ![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
