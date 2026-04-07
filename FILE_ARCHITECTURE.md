@@ -18,7 +18,7 @@ graph TD
     OLLAMA -->|HTTP REST| OLLAMAD("Ollama Daemon")
     OLLAMA -->|Requiere Tool| CHAT
     CHAT -->|Ejecuta Tool| MCPSERVER
-    MCPSERVER -->|Lee/Escribe (Seguro)| SANDBOX("data/sandbox/")
+    MCPSERVER -->|Lee/Escribe (Seguro)| SANDBOX["data/sandbox/"]
 ```
 
 ## Exploración por Directorio
