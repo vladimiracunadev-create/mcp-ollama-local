@@ -30,17 +30,41 @@ Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles ca
 
 ## 🏗️ Arquitectura
 
-El flujo de información es directo y local:
+Todo corre **100% local** en tu máquina. Cuatro capas bien definidas:
 
 ```mermaid
 graph LR
-    User["Usuario Navegador"] -->|HTTP| FastAPI["Backend FastAPI"]
-    FastAPI -->|Check| SQLite["Historial DB"]
-    FastAPI -->|Prompt| Ollama["Ollama LLM Local"]
-    Ollama -->|Call Tool| MCP["MCP Server Tools"]
-    MCP -->|Result| Ollama
-    Ollama -->|Response| FastAPI
-    FastAPI -->|HTML-JSON| User
+    subgraph CLIENTE["  Cliente  "]
+        U["Navegador Web"]
+    end
+
+    subgraph BACKEND["  Backend - Docker  "]
+        API["FastAPI Backend"]
+        DB["SQLite Historial"]
+    end
+
+    subgraph IA["  Motor de IA  "]
+        OL["Ollama LLM Local"]
+    end
+
+    subgraph TOOLS["  Herramientas MCP  "]
+        MCP["MCP Server"]
+        SB["Sandbox - Zona Segura"]
+    end
+
+    U -->|HTTP| API
+    API -->|Guarda sesion| DB
+    API -->|Prompt + Historial| OL
+    OL -->|Tool Call| MCP
+    MCP -->|Acceso controlado| SB
+    MCP -->|Resultado| OL
+    OL -->|Respuesta final| API
+    API -->|HTML| U
+
+    style CLIENTE fill:#1e3a5f,color:#e2e8f0,stroke:#60a5fa
+    style BACKEND fill:#14532d,color:#e2e8f0,stroke:#4ade80
+    style IA fill:#4a1d96,color:#e2e8f0,stroke:#a78bfa
+    style TOOLS fill:#78350f,color:#e2e8f0,stroke:#fbbf24
 ```
 
 ## 📊 Requisitos del Sistema
