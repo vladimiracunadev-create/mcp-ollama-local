@@ -5,7 +5,8 @@
 ### v1.1.0 (Próxima)
 - [ ] Agregar soporte para múltiples modelos en Ollama simultáneamente.
 - [ ] Mejorar la interfaz de usuario con temas oscuros y responsivos.
-- [ ] Implementar autenticación básica para acceso seguro.
+- [x] Implementar autenticación básica para acceso seguro (`API_KEY`).
+- [x] Hardening de seguridad integral (8 capas).
 
 ### v1.2.0
 - [ ] Expandir herramientas MCP: agregar soporte para ejecución de comandos seguros, acceso a bases de datos locales.

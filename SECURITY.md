@@ -23,6 +23,15 @@ Te contactaré a la brevedad posible (generalmente en menos de 48 horas laborale
 
 ¡Gracias por ayudar a mantener la infraestructura segura y profesional!
 
+## Auditoría y Análisis Estático (SAST)
+
+Para garantizar la integridad del código y las dependencias, el proyecto utiliza:
+- **Bandit**: Analiza el código fuente en busca de patrones de programación inseguros (ej. Inyección SQL, uso de `eval`, etc.).
+- **Pip-Audit**: Escanea las dependencias instaladas contra bases de datos de vulnerabilidades conocidas (CVE).
+- **Ruff**: Asegura la calidad y consistencia del código, previniendo errores comunes.
+
+Estas herramientas se ejecutan automáticamente en cada cambio a través de GitHub Actions.
+
 ## Consideraciones de Seguridad en Tools MCP
 
 Las herramientas MCP (`list_files`, `grep_text`, `system_info`) operan dentro de un **sandbox** (`data/sandbox`). Se han implementado las siguientes protecciones:

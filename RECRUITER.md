@@ -17,9 +17,19 @@ No basta con que el script funcione local. Demuestro la capacidad de llevar una 
 
 ### 2. CI/CD: "Quality Gates" Estrictos y Comprobables
 La carpeta `.github/workflows` define mi acercamiento inamovible para equipos distribuidos (CI/CD Automático):
-- **Bandit (Sec-Ops):** Análisis forzado contra inyección y vulnerabilidades en código. (Se resolvieron las inyecciones SQL en SQLite al parametrizar consultas en los commits subsecuentes).
+- **Bandit (Sec-Ops):** Análisis forzado contra inyección y vulnerabilidades en código. Se resolvieron proactivamente vectores de inyección SQL (B608) mediante refactorización de consultas parametrizadas.
+- **Pip-Audit:** Monitoreo constante de vulnerabilidades en la cadena de suministro de dependencias (CVEs), asegurando que el proyecto corra sobre librerías parchadas y seguras.
 - **Ruff (Linter y Format):** Asegura cumplimiento estricto de Guías Pep-8 a 88 lineas.
 - **Pytest/Cov:** Evaluaciones forzadas que interrumpen integraciones si caen los tests e-2-e locales (de FastApi) implementados para evitar regresiones de interfaz.
+
+### 4. Seguridad en 8 Capas (Defense in Depth)
+He transformado una herramienta local en una aplicación "Hardened" mediante 8 capas de protección:
+1. **Container Hardening**: Rootless, Healthchecks y pinning de imágenes.
+2. **Network Isolation**: Localhost-only binding por defecto.
+3. **App Security**: Middlewares de headers (CSP, HSTS) y Rate Limiting.
+4. **Auth Layer**: Soporte nativo para API_KEY obligatoria.
+5. **Tool Sandbox**: Validación estricta de rutas MCP y enmascaramiento de OS.
+6. **SAST/Audit**: Integración nativa de Bandit y Pip-Audit en el pipeline.
 
 ### 3. Observabilidad, Mantenibilidad y DX de Herramientas Rápidas
 - Fuerte orientación al **Developer Experience (DX)** usando la reciente y veloz librería **`uv` de Astral** (Rust-based environment) para resolver el ecosistema Python, huyendo de las arcaicas instalaciones eternas de dependencias y mutabilidad (*lockfiles* absolutos).
