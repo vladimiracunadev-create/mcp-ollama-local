@@ -101,6 +101,8 @@ Este proyecto implementa un modelo de seguridad robusto de **8 capas**:
 - [🕴️ RECRUITER (RECRUITER.md)](RECRUITER.md)
 - [🗺️ Arquitectura (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
 - [🛡️ Seguridad (SECURITY.md)](SECURITY.md)
+- [🔧 Troubleshooting (TROUBLESHOOTING.md)](TROUBLESHOOTING.md)
+- [🗺️ Roadmap (ROADMAP.md)](ROADMAP.md)
 
 ## 📄 Licencia
 
