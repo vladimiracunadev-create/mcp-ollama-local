@@ -1,4 +1,4 @@
-# Verificación de seguridad complementaria
+# 🔎 Verificación de seguridad complementaria
 
 Este repositorio mantiene una separación explícita entre:
 
@@ -13,7 +13,7 @@ La base de confianza sigue estando en los controles internos del repositorio:
 - `make audit`
 - `make ci-local`
 
-## Uso opcional de SafeSkill
+## 🧪 Uso opcional de SafeSkill
 
 SafeSkill puede ejecutarse desde terminal sin convertirlo en dependencia estructural del proyecto:
 
@@ -24,7 +24,7 @@ npx skillsafe scan . --json > safeskill-report.json
 
 Esto permite obtener una lectura externa adicional sobre el estado del repositorio, especialmente útil durante revisiones manuales, mantenimiento o discusión de hallazgos en PRs.
 
-## Qué tipo de señales puede aportar
+## 📡 Qué tipo de señales puede aportar
 
 En términos generales, SafeSkill puede ayudar a resaltar:
 
@@ -35,14 +35,14 @@ En términos generales, SafeSkill puede ayudar a resaltar:
 
 Estas señales son útiles, pero no deben leerse de forma aislada.
 
-## Cómo interpretar resultados
+## 🧠 Cómo interpretar resultados
 
 - Un hallazgo no equivale automáticamente a vulnerabilidad explotable.
 - Un resultado “sin findings” no demuestra ausencia de riesgo.
 - Un score externo no sustituye revisión de código, pruebas ni conocimiento del contexto de despliegue.
 - Los findings deben contrastarse con arquitectura, configuración, defaults y límites documentados.
 
-## Postura del proyecto
+## 📌 Postura del proyecto
 
 El repositorio acepta escrutinio externo y lo considera valioso cuando:
 

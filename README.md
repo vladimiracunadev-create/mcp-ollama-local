@@ -1,10 +1,20 @@
-# MCP Ollama Local
+# 🧠 MCP Ollama Local
+
+> **Web local (FastAPI) + IA local (Ollama) + herramientas MCP**
+
+![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Local First](https://img.shields.io/badge/local--first-yes-2d7a66.svg)
+![Validation](https://img.shields.io/badge/validation-internal%20checks-informational.svg)
 
 Interfaz web local para conversar con modelos servidos por Ollama, con un puente MCP acotado a un sandbox local y persistencia simple en SQLite.
 
 El objetivo del proyecto es ser útil y mantenible en entorno local. No intenta ser una plataforma multiusuario, ni un gateway público, ni una suite de seguridad “enterprise”.
 
-## Overview
+> [!NOTE]
+> La confianza del proyecto se apoya en validaciones reproducibles, revisión técnica y documentación consistente. Los badges de cabecera son informativos, no la evidencia principal de calidad.
+
+## 🚀 Overview
 
 - Backend FastAPI que expone páginas HTML y endpoints JSON.
 - Cliente HTTP hacia Ollama para `/api/chat`.
@@ -12,7 +22,7 @@ El objetivo del proyecto es ser útil y mantenible en entorno local. No intenta 
 - Historial persistente en `data/chat_history.sqlite`.
 - Despliegue soportado en local, Docker y Kubernetes básicos.
 
-## Arquitectura
+## 🏗️ Arquitectura
 
 ```mermaid
 graph LR
@@ -30,7 +40,7 @@ Flujo normal:
 3. Las tools MCP solo leen dentro de `data/sandbox`.
 4. La conversación se guarda en SQLite cuando el chat usa historial.
 
-## Stack real
+## 🧰 Stack real
 
 - Python 3.13
 - FastAPI + Uvicorn
@@ -41,7 +51,7 @@ Flujo normal:
 
 No hay Node, npm ni build frontend porque la UI es HTML/CSS/JS estático y hoy no lo necesita.
 
-## Seguridad real
+## 🛡️ Seguridad real
 
 Controles implementados hoy:
 
@@ -64,7 +74,7 @@ Límites importantes:
 - HSTS solo aplica si sirves la app detrás de HTTPS real.
 - `pip-audit` necesita salida de red al servicio de advisories.
 
-## Instalación rápida
+## ⚡ Instalación rápida
 
 ### Local
 
@@ -92,7 +102,7 @@ docker compose up --build
 
 El compose publica solo en `127.0.0.1:8000`.
 
-## Configuración
+## ⚙️ Configuración
 
 Variables soportadas:
 
@@ -117,7 +127,7 @@ ALLOWED_ORIGINS=http://127.0.0.1:8000
 EOF
 ```
 
-## Validación
+## ✅ Validación
 
 Comandos soportados:
 
@@ -146,7 +156,7 @@ En GitHub Actions:
 - `ci.yml` ejecuta `make ci-local`
 - `security.yml` ejecuta `bandit` y `pip-audit`
 
-## Verificación externa opcional
+## 🔎 Verificación externa opcional
 
 Además de las validaciones propias del repositorio, se puede ejecutar SafeSkill como revisión externa complementaria desde terminal, sin incorporarlo como dependencia estructural del proyecto:
 
@@ -169,7 +179,7 @@ Límites importantes:
 
 Más detalle en [docs/security-verification.md](docs/security-verification.md).
 
-## Uso
+## 💬 Uso
 
 - `/` muestra estado básico de web, Ollama y MCP
 - `/chat` envía prompts al modelo
@@ -190,7 +200,7 @@ Con API key obligatoria:
 curl -sS http://127.0.0.1:8000/api/health -H 'X-API-Key: change-me'
 ```
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 - Si `/api/health` muestra `ollama_ok=false`, verifica `OLLAMA_URL` y `ollama serve`.
 - Si Docker no alcanza Ollama en Linux, revisa `host.docker.internal` y el bind del host.
@@ -204,7 +214,7 @@ Guías relacionadas:
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-## Contribuciones
+## 🤝 Contribuciones
 
 Se aceptan fixes verificables, mejoras de documentación alineadas con el código y endurecimiento técnico razonable.
 

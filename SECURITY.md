@@ -1,6 +1,6 @@
-# Security Policy
+# 🛡️ Security Policy
 
-## Scope
+## 🎯 Scope
 
 Este repositorio es una aplicación local-first para uso individual o de laboratorio. La postura de seguridad está orientada a:
 
@@ -11,11 +11,11 @@ Este repositorio es una aplicación local-first para uso individual o de laborat
 
 No está diseñado como servicio multiusuario expuesto a internet sin un reverse proxy, autenticación más fuerte y controles operacionales adicionales.
 
-## Supported versions
+## 🏗️ Supported versions
 
 Solo la rama `main` recibe correcciones activas.
 
-## Reportar vulnerabilidades
+## 🔓 Reportar vulnerabilidades
 
 No publiques vulnerabilidades explotables en issues públicos.
 
@@ -27,7 +27,7 @@ Envía un reporte a `vladimir.acuna.dev@gmail.com` con:
 - versión o commit,
 - y, si aplica, PoC mínima.
 
-## Controles implementados
+## 🔐 Controles implementados
 
 ### Aplicación
 
@@ -62,7 +62,7 @@ Envía un reporte a `vladimir.acuna.dev@gmail.com` con:
 - Puerto de aplicación no privilegiado.
 - `docker-compose.yml` publica solo en `127.0.0.1`.
 
-## Validación reproducible
+## ✅ Validación reproducible
 
 Local:
 
@@ -83,7 +83,7 @@ Notas:
 - `make audit` es offline-friendly: usa `bandit` + `pip check`.
 - `pip-audit` requiere acceso a advisories externos y por eso vive en el workflow de seguridad.
 
-## Verificación externa complementaria
+## 🔎 Verificación externa complementaria
 
 El proyecto puede revisarse también con herramientas externas de análisis, incluyendo SafeSkill, siempre como capa complementaria y no como criterio principal de confianza.
 
@@ -110,7 +110,7 @@ Interpretación recomendada:
 
 Si se comparte un reporte externo en un issue o PR, debe acompañarse de explicación técnica, impacto y propuesta concreta de corrección cuando corresponda.
 
-## Límites y no-objetivos
+## 🚧 Límites y no-objetivos
 
 - No hay autenticación de usuarios ni sesiones.
 - No hay protección contra un operador local malicioso.
@@ -119,7 +119,7 @@ Si se comparte un reporte externo en un issue o PR, debe acompañarse de explica
 - CORS no es un control de autenticación.
 - Si expones la app fuera de localhost, debes añadir TLS, reverse proxy, autenticación más fuerte y observabilidad operativa.
 
-## Falsos positivos frecuentes
+## ⚠️ Falsos positivos frecuentes
 
 Hallazgos que suelen aparecer en escáneres genéricos y requieren contexto:
 
@@ -128,7 +128,7 @@ Hallazgos que suelen aparecer en escáneres genéricos y requieren contexto:
 - “Wildcard CORS”: sería hallazgo real si se configurara `*`; el default actual es una lista local explícita.
 - “SQLite insecure”: depende del contexto. Aquí el riesgo principal no es SQL injection sino exposición del host o permisos de filesystem.
 
-## Política de contribuciones de seguridad
+## 🤝 Política de contribuciones de seguridad
 
 Se priorizan PRs que:
 

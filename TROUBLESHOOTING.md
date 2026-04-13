@@ -1,4 +1,7 @@
-# Troubleshooting
+# 🔧 Troubleshooting
+
+> [!NOTE]
+> Empieza por `/api/health`. En este proyecto suele decir más sobre el estado real del sistema que la UI por sí sola.
 
 ## 1. `/api/health` marca `ollama_ok=false`
 

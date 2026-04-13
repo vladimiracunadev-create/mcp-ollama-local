@@ -1,13 +1,16 @@
-# Instalación y Quickstart
+# 📦 Instalación y Quickstart
 
-## Requisitos
+> [!TIP]
+> Si quieres la ruta más directa para probar el proyecto, empieza por local o Docker y valida con `/api/health` antes de depurar la UI.
+
+## 📋 Requisitos
 
 - Python 3.13
 - `uv`
 - Ollama instalado y corriendo
 - Un modelo descargado, por ejemplo `qwen3:8b`
 
-## Opción 1: local
+## 💻 Opción 1: local
 
 ```bash
 git clone https://github.com/vladimiracunadev-create/mcp-ollama-local.git
@@ -21,7 +24,7 @@ Abrir:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Configuración opcional
+## ⚙️ Configuración opcional
 
 Crea `.env` si necesitas cambiar modelo, URL o protección por API key:
 
@@ -34,7 +37,7 @@ DATA_DIR=./data
 # ALLOWED_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
 ```
 
-## Opción 2: Docker
+## 🐳 Opción 2: Docker
 
 ```bash
 docker compose up --build
@@ -53,7 +56,7 @@ Consideraciones:
 - En Linux, revisa soporte `host-gateway` y el bind de Ollama.
 - Si Ollama escucha solo en `127.0.0.1`, el contenedor puede no alcanzarlo.
 
-## Opción 3: Kubernetes
+## ☸️ Opción 3: Kubernetes
 
 Los manifiestos incluidos son básicos y útiles para laboratorio, no una distribución de producción.
 
@@ -69,7 +72,7 @@ Notas:
 - El `PersistentVolumeClaim` es simple y asume un `StorageClass` funcional.
 - `OLLAMA_URL` en `k8s/deploy.yaml` debe ajustarse a tu topología real.
 
-## Validación posterior a la instalación
+## ✅ Validación posterior a la instalación
 
 ```bash
 make lint
@@ -78,7 +81,7 @@ make audit
 curl -sS http://127.0.0.1:8000/api/health
 ```
 
-## Troubleshooting corto
+## 🔧 Troubleshooting corto
 
 - Si `make run` arranca pero el chat falla, consulta `/api/health`.
 - Si Docker responde pero `ollama_ok=false`, revisa conectividad hacia `host.docker.internal:11434`.
