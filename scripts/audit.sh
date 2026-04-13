@@ -15,4 +15,4 @@ PY_FILES="$(find "$ROOT/apps" "$ROOT/host" "$ROOT/mcp_server" -name '*.py' ! -na
 
 echo
 echo "==> pip check"
-"$VENV_BIN/python" -m pip check
+UV_CACHE_DIR="${TMPDIR:-/tmp}/uv-cache" uv pip check --python "$VENV_BIN/python"

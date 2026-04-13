@@ -27,10 +27,10 @@ smoke: ## Ejecuta solo smoke tests del backend/API
 	$(VENV_BIN)/pytest -k "health or history or chat or auth"
 
 audit: ## Ejecuta checks de seguridad reproducibles
-	./scripts/audit.sh
+	bash ./scripts/audit.sh
 
 ci-local: ## Replica los checks principales de CI en local
-	./scripts/ci_local.sh
+	bash ./scripts/ci_local.sh
 
 clean: ## Limpia archivos temporales y cachés
 	find . -type d -name "__pycache__" -exec rm -rf {} +
