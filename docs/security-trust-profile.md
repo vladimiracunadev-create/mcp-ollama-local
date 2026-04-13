@@ -34,40 +34,16 @@ Lectura rápida:
 ## 🧱 Qué controles se ejecutan
 
 ```mermaid
-flowchart LR
-    subgraph Local["Local"]
-        L1["make lint"]
-        L2["make test"]
-        L3["make audit"]
-        L4["make semgrep"]
-        L5["make sbom"]
-        L6["make trust-check"]
-    end
-
-    subgraph CI["GitHub Actions"]
-        C1["ci.yml"]
-        C2["security.yml"]
-        C3["codeql.yml"]
-        C4["semgrep.yml"]
-        C5["supply-chain.yml"]
-        C6["scorecard.yml"]
-    end
-
-    subgraph Evidence["Evidencia"]
-        E1["SARIF / checks"]
-        E2["SBOM"]
-        E3["Firma de release"]
-    end
-
-    Local --> CI
-    CI --> Evidence
+flowchart TD
+    Local["Validación local"] --> Evidence["Evidencia verificable"]
+    CI["GitHub Actions"] --> Evidence
 ```
 
 Lectura rápida:
 
-- `Local`: comandos reproducibles para validar el repo antes de publicar cambios
+- `Validación local`: comandos reproducibles para validar el repo antes de publicar cambios
 - `GitHub Actions`: ejecución visible de calidad, seguridad y scanning
-- `Evidencia`: checks, SARIF, SBOM y firma de release cuando aplica
+- `Evidencia verificable`: checks, SARIF, SBOM y firma de release cuando aplica
 
 ### Local
 
