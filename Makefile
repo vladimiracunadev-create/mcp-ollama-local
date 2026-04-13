@@ -1,4 +1,4 @@
-.PHONY: help install run lint format format-check test audit smoke ci-local clean
+.PHONY: help install run lint format format-check test audit semgrep sbom trust-check smoke ci-local clean
 
 VENV_BIN := .venv/bin
 
@@ -28,6 +28,15 @@ smoke: ## Ejecuta solo smoke tests del backend/API
 
 audit: ## Ejecuta checks de seguridad reproducibles
 	bash ./scripts/audit.sh
+
+semgrep: ## Ejecuta reglas Semgrep propias del repositorio
+	bash ./scripts/semgrep.sh
+
+sbom: ## Genera un SBOM CycloneDX desde la .venv del proyecto
+	bash ./scripts/sbom.sh
+
+trust-check: ## Ejecuta la validación ampliada de confianza del repositorio
+	bash ./scripts/trust_check.sh
 
 ci-local: ## Replica los checks principales de CI en local
 	bash ./scripts/ci_local.sh

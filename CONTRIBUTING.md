@@ -17,6 +17,7 @@ make lint
 make format-check
 make test
 make audit
+make semgrep
 ```
 
 Opcionalmente, si quieres aportar contexto adicional en un PR de seguridad o hardening, puedes adjuntar una verificación externa complementaria:
@@ -50,6 +51,7 @@ No es un requisito de contribución. Si lo usas, resume los hallazgos relevantes
 - No introduzcas Node/npm salvo necesidad técnica real.
 - Mantén la UI simple; este repo no necesita una build chain frontend.
 - Si cambias configuración, refleja el cambio en `README.md`, `INSTALL.md` o `SECURITY.md`.
+- Si tocas superficie de seguridad, valida también con `make trust-check` antes de abrir PR.
 
 ## 🔎 Pull requests de seguridad o escaneo
 
@@ -61,3 +63,11 @@ Si propones una mejora de seguridad:
 - y añade validación o test cuando corresponda.
 
 Un PR que solo agregue un badge o enlace a un escáner externo no se considera una mejora suficiente del producto.
+
+## 🛡️ Perfil de confianza
+
+Antes de proponer cambios de seguridad, revisa [docs/security-trust-profile.md](docs/security-trust-profile.md) para entender:
+
+- qué controles son base,
+- qué señales públicas son complementarias,
+- y qué findings requieren criterio humano.

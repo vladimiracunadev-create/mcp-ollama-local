@@ -77,11 +77,40 @@ CI:
 
 - `.github/workflows/ci.yml`: contrato principal de calidad
 - `.github/workflows/security.yml`: `bandit` + `pip-audit`
+- `.github/workflows/codeql.yml`: code scanning semántico para Python
+- `.github/workflows/semgrep.yml`: reglas específicas del repositorio
+- `.github/workflows/supply-chain.yml`: SBOM y firma de artefactos de release
+- `.github/workflows/scorecard.yml`: señal pública complementaria
 
 Notas:
 
 - `make audit` es offline-friendly: usa `bandit` + `pip check`.
 - `pip-audit` requiere acceso a advisories externos y por eso vive en el workflow de seguridad.
+- `make semgrep` usa reglas propias del repositorio con `uv tool run`.
+- `make sbom` genera un SBOM CycloneDX desde la `.venv` actual.
+- `make trust-check` agrega Semgrep y SBOM al contrato base local.
+
+## 🧭 Security & Trust Profile
+
+El proyecto mantiene un perfil de confianza propio, basado en controles complementarios y evidencia reproducible.
+
+Resumen:
+
+- CodeQL para code scanning semántico
+- Dependabot para alertas y actualización de dependencias
+- `pip-audit` para vulnerabilidades conocidas en dependencias Python
+- Semgrep para reglas específicas del contexto del repo
+- CycloneDX para inventario de componentes
+- Cosign para firma keyless de artefactos de release
+- OpenSSF Scorecard como señal pública secundaria
+
+Lo que este perfil no hace:
+
+- no delega la confianza del proyecto a una sola herramienta,
+- no trata una puntuación pública como certificación,
+- y no reemplaza juicio humano en findings con contexto operativo.
+
+Más detalle en [docs/security-trust-profile.md](docs/security-trust-profile.md).
 
 ## 🔎 Verificación externa complementaria
 

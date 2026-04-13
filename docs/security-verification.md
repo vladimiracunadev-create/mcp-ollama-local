@@ -13,6 +13,8 @@ La base de confianza sigue estando en los controles internos del repositorio:
 - `make audit`
 - `make ci-local`
 
+Para la vista completa del sistema de controles, señales públicas y evidencia de supply chain, consulta [docs/security-trust-profile.md](security-trust-profile.md).
+
 ## 🧪 Uso opcional de SafeSkill
 
 SafeSkill puede ejecutarse desde terminal sin convertirlo en dependencia estructural del proyecto:

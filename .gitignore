@@ -18,6 +18,9 @@ ENV/
 # Logs
 *.log
 
+# Generated artifacts
+artifacts/
+
 # Local data (no versionar)
 data/chat_history.sqlite
 data/*.sqlite

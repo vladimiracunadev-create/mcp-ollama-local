@@ -1,0 +1,19 @@
+rules:
+  - id: repo.no-hardcoded-api-key-default
+    message: "No introduzcas valores por defecto hardcoded para API_KEY o secretos equivalentes en el código."
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern-either:
+          - pattern: os.getenv("API_KEY", $SECRET)
+          - pattern: os.environ.get("API_KEY", $SECRET)
+      - metavariable-pattern:
+          metavariable: $SECRET
+          language: generic
+          pattern: '"..."'
+      - pattern-not: os.getenv("API_KEY", "")
+      - pattern-not: os.environ.get("API_KEY", "")
+    metadata:
+      category: secrets
+      confidence: medium
+      justification: "El repositorio debe fallar o quedar explícito cuando falta una clave, no ocultarlo con un secreto embebido."

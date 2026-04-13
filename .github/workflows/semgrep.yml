@@ -1,0 +1,35 @@
+name: Semgrep Rules
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep:
+    name: Semgrep Custom Rules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Run Semgrep rules
+        run: bash ./scripts/semgrep.sh sarif artifacts/semgrep.sarif
+
+      - name: Upload Semgrep SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: artifacts/semgrep.sarif

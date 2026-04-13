@@ -1,0 +1,11 @@
+rules:
+  - id: repo.python-no-open-bind
+    message: "No abras el servidor Python en 0.0.0.0 fuera de flujos de contenedor explícitos; el default del repo en local es 127.0.0.1."
+    severity: WARNING
+    languages: [python]
+    patterns:
+      - pattern: uvicorn.run(..., host="0.0.0.0", ...)
+    metadata:
+      category: exposure
+      confidence: medium
+      justification: "Ayuda a detectar drift entre el comportamiento local-first documentado y el runtime Python."

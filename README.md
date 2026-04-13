@@ -64,6 +64,8 @@ Controles implementados hoy:
 - Contenedor no-root en Docker.
 - Validación reproducible con Ruff, Pytest, Bandit y `pip check`.
 - Auditoría de CVEs con `pip-audit` en workflow de seguridad.
+- Code scanning con CodeQL y reglas Semgrep específicas del repo.
+- SBOM CycloneDX y firma de artefactos de release cuando aplica.
 
 Límites importantes:
 
@@ -73,6 +75,28 @@ Límites importantes:
 - El sandbox protege el acceso de las tools MCP, no el sistema operativo completo.
 - HSTS solo aplica si sirves la app detrás de HTTPS real.
 - `pip-audit` necesita salida de red al servicio de advisories.
+
+## 🧭 Security & Trust Profile
+
+La estrategia del repositorio no depende de una sola herramienta ni de una sola puntuación. Se construye por capas:
+
+1. validación reproducible local
+2. controles visibles en CI
+3. reglas adaptadas al contexto del repo
+4. evidencia de supply chain
+5. señales públicas complementarias
+
+Controles principales:
+
+- `ci.yml`: contrato base de calidad
+- `security.yml`: Bandit + `pip-audit`
+- `codeql.yml`: code scanning semántico
+- `semgrep.yml`: reglas locales del repositorio
+- `supply-chain.yml`: SBOM y firma en release
+- `scorecard.yml`: señal pública complementaria
+- `dependabot.yml`: alertas y PRs de actualización para dependencias y workflows
+
+El detalle completo vive en [docs/security-trust-profile.md](docs/security-trust-profile.md).
 
 ## ⚡ Instalación rápida
 
@@ -138,6 +162,9 @@ make format-check
 make test
 make smoke
 make audit
+make semgrep
+make sbom
+make trust-check
 make ci-local
 ```
 
@@ -149,12 +176,19 @@ Qué hace cada uno:
 - `make test`: suite completa de pytest
 - `make smoke`: subset rápido de API/backend
 - `make audit`: `bandit` + `pip check`
+- `make semgrep`: reglas Semgrep propias del repositorio
+- `make sbom`: genera un SBOM CycloneDX desde la `.venv`
+- `make trust-check`: `ci-local` + Semgrep + SBOM
 - `make ci-local`: replica el contrato principal de CI
 
 En GitHub Actions:
 
 - `ci.yml` ejecuta `make ci-local`
 - `security.yml` ejecuta `bandit` y `pip-audit`
+- `codeql.yml` publica code scanning en GitHub
+- `semgrep.yml` ejecuta reglas locales y sube SARIF
+- `supply-chain.yml` genera SBOM y firma artefactos de release
+- `scorecard.yml` añade una señal pública complementaria sobre higiene del repo
 
 ## 🔎 Verificación externa opcional
 
@@ -178,6 +212,17 @@ Límites importantes:
 - Cualquier finding debe interpretarse con contexto; los falsos positivos existen y los riesgos reales no deben descartarse solo porque un scan “salga bien”.
 
 Más detalle en [docs/security-verification.md](docs/security-verification.md).
+
+## 🌐 Señales públicas complementarias
+
+Terceros pueden observar varias señales, pero ninguna se trata como verdad absoluta por sí sola:
+
+- CodeQL en code scanning de GitHub
+- Dependabot para dependencias y workflows
+- OpenSSF Scorecard como señal pública secundaria
+- SBOM de release y firma Cosign cuando aplica
+
+La intención es mostrar evidencia acumulativa de mantenimiento y criterio técnico, no optimizar un único badge o score.
 
 ## 💬 Uso
 
@@ -213,6 +258,7 @@ Guías relacionadas:
 - [SECURITY.md](SECURITY.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- [docs/security-trust-profile.md](docs/security-trust-profile.md)
 
 ## 🤝 Contribuciones
 

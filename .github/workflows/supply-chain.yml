@@ -1,0 +1,60 @@
+name: Supply Chain Evidence
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  sbom:
+    name: SBOM and provenance artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Generate CycloneDX SBOM
+        run: make sbom
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: artifacts/sbom.cdx.json
+
+      - name: Install Cosign
+        if: github.event_name == 'release'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign SBOM with keyless Cosign
+        if: github.event_name == 'release'
+        run: |
+          cosign sign-blob --yes \
+            --output-signature artifacts/sbom.cdx.json.sig \
+            --output-certificate artifacts/sbom.cdx.json.pem \
+            artifacts/sbom.cdx.json
+
+      - name: Upload signed provenance files
+        if: github.event_name == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-signature
+          path: |
+            artifacts/sbom.cdx.json.sig
+            artifacts/sbom.cdx.json.pem

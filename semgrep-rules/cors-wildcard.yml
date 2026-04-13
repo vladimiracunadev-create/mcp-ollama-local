@@ -1,0 +1,13 @@
+rules:
+  - id: repo.no-wildcard-cors
+    message: "No uses CORS wildcard en el backend principal; contradice el modelo local-first y debilita el control de superficie web."
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern-either:
+          - pattern: allow_origins=["*"]
+          - pattern: allow_origin_regex=".*"
+    metadata:
+      category: web-security
+      confidence: high
+      justification: "El proyecto documenta defaults locales explícitos, no CORS abierto."

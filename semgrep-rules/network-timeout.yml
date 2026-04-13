@@ -1,0 +1,25 @@
+rules:
+  - id: repo.httpx-timeout-required
+    message: "Las llamadas HTTP del repositorio deben fijar timeout explícito para evitar bloqueos o degradación silenciosa."
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern-either:
+          - pattern: httpx.AsyncClient(...)
+          - pattern: httpx.Client(...)
+          - pattern: httpx.get(...)
+          - pattern: httpx.post(...)
+          - pattern: httpx.put(...)
+          - pattern: httpx.patch(...)
+          - pattern: httpx.delete(...)
+      - pattern-not: httpx.AsyncClient(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.Client(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.get(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.post(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.put(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.patch(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.delete(..., timeout=$TIMEOUT, ...)
+    metadata:
+      category: availability
+      confidence: medium
+      justification: "El proyecto depende de llamadas locales a Ollama; sin timeout explícito los fallos de red quedan opacos."
