@@ -15,12 +15,21 @@ El proyecto prioriza, en este orden:
 
 ```mermaid
 flowchart TD
-    A["Seguridad reproducible"] --> B["Coherencia docs-código"]
-    B --> C["Controles visibles en CI"]
-    C --> D["Reglas propias del repositorio"]
-    D --> E["Señales públicas complementarias"]
-    E --> F["Trazabilidad de supply chain"]
+    A["Seguridad"] --> B["Coherencia"]
+    B --> C["CI visible"]
+    C --> D["Reglas propias"]
+    D --> E["Señales públicas"]
+    E --> F["Supply chain"]
 ```
+
+Lectura rápida:
+
+- `Seguridad`: validación reproducible
+- `Coherencia`: documentación y código alineados
+- `CI visible`: workflows que terceros pueden verificar
+- `Reglas propias`: controles ajustados al contexto del repo
+- `Señales públicas`: evidencia complementaria, no autoridad única
+- `Supply chain`: inventario y firma de artefactos
 
 ## 🧱 Qué controles se ejecutan
 
@@ -53,6 +62,12 @@ flowchart LR
     Local --> CI
     CI --> Evidence
 ```
+
+Lectura rápida:
+
+- `Local`: comandos reproducibles para validar el repo antes de publicar cambios
+- `GitHub Actions`: ejecución visible de calidad, seguridad y scanning
+- `Evidencia`: checks, SARIF, SBOM y firma de release cuando aplica
 
 ### Local
 

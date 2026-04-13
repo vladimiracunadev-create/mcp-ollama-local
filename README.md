@@ -120,12 +120,21 @@ El detalle completo vive en [docs/security-trust-profile.md](docs/security-trust
 
 ```mermaid
 flowchart TD
-    Local["Validación local\nlint / test / audit / semgrep / sbom"] --> CI["CI visible\nci.yml / security.yml / semgrep.yml / codeql.yml"]
-    CI --> Rules["Reglas del repo\nSemgrep + defaults local-first"]
-    Rules --> Supply["Supply chain\nuv.lock / CycloneDX SBOM / Cosign"]
-    Supply --> Public["Señales públicas secundarias\nDependabot / Scorecard / Code Scanning"]
-    Public --> Review["Juicio humano\nreview técnica + contexto operativo"]
+    Local["Checks locales"] --> CI["Checks en CI"]
+    CI --> Rules["Reglas del repo"]
+    Rules --> Supply["Supply chain"]
+    Supply --> Public["Señales públicas"]
+    Public --> Review["Revisión técnica"]
 ```
+
+Lectura rápida del diagrama:
+
+- `Checks locales`: `lint`, `test`, `audit`, `semgrep`, `sbom`
+- `Checks en CI`: `ci.yml`, `security.yml`, `semgrep.yml`, `codeql.yml`
+- `Reglas del repo`: Semgrep y defaults local-first
+- `Supply chain`: `uv.lock`, SBOM CycloneDX y Cosign
+- `Señales públicas`: Dependabot, Scorecard y Code Scanning
+- `Revisión técnica`: interpretación humana de findings y contexto
 
 ## ⚡ Instalación rápida
 
