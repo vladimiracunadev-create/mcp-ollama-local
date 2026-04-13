@@ -25,12 +25,32 @@ El objetivo del proyecto es ser útil y mantenible en entorno local. No intenta 
 ## 🏗️ Arquitectura
 
 ```mermaid
-graph LR
-    Browser["Browser"] --> Web["FastAPI web app"]
-    Web --> SQLite["SQLite history"]
-    Web --> Ollama["Ollama HTTP API"]
-    Web --> MCP["MCP bridge over stdio"]
-    MCP --> Sandbox["data/sandbox"]
+flowchart LR
+    subgraph Client["Cliente local"]
+        Browser["Browser / UI estática"]
+    end
+
+    subgraph App["Aplicación"]
+        Web["FastAPI web app"]
+        API["HTML + JSON endpoints"]
+        DB["SQLite history"]
+    end
+
+    subgraph AI["Integraciones locales"]
+        Ollama["Ollama HTTP API"]
+        MCP["MCP bridge over stdio"]
+    end
+
+    subgraph Tools["Tools acotadas"]
+        Sandbox["data/sandbox"]
+    end
+
+    Browser --> Web
+    Web --> API
+    API --> DB
+    API --> Ollama
+    API --> MCP
+    MCP --> Sandbox
 ```
 
 Flujo normal:
@@ -97,6 +117,15 @@ Controles principales:
 - `dependabot.yml`: alertas y PRs de actualización para dependencias y workflows
 
 El detalle completo vive en [docs/security-trust-profile.md](docs/security-trust-profile.md).
+
+```mermaid
+flowchart TD
+    Local["Validación local\nlint / test / audit / semgrep / sbom"] --> CI["CI visible\nci.yml / security.yml / semgrep.yml / codeql.yml"]
+    CI --> Rules["Reglas del repo\nSemgrep + defaults local-first"]
+    Rules --> Supply["Supply chain\nuv.lock / CycloneDX SBOM / Cosign"]
+    Supply --> Public["Señales públicas secundarias\nDependabot / Scorecard / Code Scanning"]
+    Public --> Review["Juicio humano\nreview técnica + contexto operativo"]
+```
 
 ## ⚡ Instalación rápida
 

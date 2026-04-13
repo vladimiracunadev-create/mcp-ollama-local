@@ -13,7 +13,46 @@ El proyecto prioriza, en este orden:
 5. señales públicas complementarias
 6. trazabilidad de supply chain
 
+```mermaid
+flowchart TD
+    A["Seguridad reproducible"] --> B["Coherencia docs-código"]
+    B --> C["Controles visibles en CI"]
+    C --> D["Reglas propias del repositorio"]
+    D --> E["Señales públicas complementarias"]
+    E --> F["Trazabilidad de supply chain"]
+```
+
 ## 🧱 Qué controles se ejecutan
+
+```mermaid
+flowchart LR
+    subgraph Local["Local"]
+        L1["make lint"]
+        L2["make test"]
+        L3["make audit"]
+        L4["make semgrep"]
+        L5["make sbom"]
+        L6["make trust-check"]
+    end
+
+    subgraph CI["GitHub Actions"]
+        C1["ci.yml"]
+        C2["security.yml"]
+        C3["codeql.yml"]
+        C4["semgrep.yml"]
+        C5["supply-chain.yml"]
+        C6["scorecard.yml"]
+    end
+
+    subgraph Evidence["Evidencia"]
+        E1["SARIF / checks"]
+        E2["SBOM"]
+        E3["Firma de release"]
+    end
+
+    Local --> CI
+    CI --> Evidence
+```
 
 ### Local
 
