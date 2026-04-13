@@ -1,7 +1,7 @@
 [project]
 name = "mcp-ollama-local"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local-first chat UI for Ollama with a constrained MCP tool bridge."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

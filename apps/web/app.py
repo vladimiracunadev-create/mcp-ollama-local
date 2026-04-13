@@ -2,17 +2,19 @@ import asyncio
 import sqlite3
 import time
 from collections import defaultdict
+from contextlib import closing
 from pathlib import Path
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request, Security
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
-from host.chat_engine import run_chat
+from host.chat_engine import init_db, run_chat
 from host.mcp_bridge import open_mcp_session
 from host.settings import load_settings
 
@@ -26,6 +28,8 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 async def get_api_key(api_key_header: str = Security(api_key_header)):
     settings = load_settings()
     if not settings.api_key:
+        return None
+    if not settings.require_api_key and not api_key_header:
         return None
     if api_key_header == settings.api_key:
         return api_key_header
@@ -55,7 +59,7 @@ RATE_LIMIT_WINDOW = 60  # seconds
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    client_ip = request.client.host
+    client_ip = request.client.host if request.client else "unknown"
     now = time.time()
 
     RATE_LIMIT_STASH[client_ip] = [
@@ -78,17 +82,24 @@ async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     csp = (
         "default-src 'self'; "
+        "base-uri 'self'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self'; "
+        "object-src 'none'; "
         "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data:; "
-        "connect-src 'self' http://localhost:11434 http://127.0.0.1:11434;"
+        "connect-src 'self';"
     )
     response.headers["Content-Security-Policy"] = csp
+    if request.url.scheme == "https":
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=63072000; includeSubDomains"
+        )
     return response
 
 
@@ -107,10 +118,28 @@ if STATIC.exists():
 class ChatIn(BaseModel):
     message: str
 
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("message must not be empty")
+        if len(cleaned) > 8000:
+            raise ValueError("message is too long")
+        return cleaned
+
 
 class MCPIn(BaseModel):
     tool: str
-    args: dict = {}
+    args: dict = Field(default_factory=dict)
+
+    @field_validator("tool")
+    @classmethod
+    def validate_tool(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("tool must not be empty")
+        return cleaned
 
 
 # -----------------------
@@ -126,6 +155,28 @@ def _content_to_plain(content):
         else:
             out.append(str(c))
     return out
+
+
+def _api_error(status_code: int, error: str) -> JSONResponse:
+    return JSONResponse(status_code=status_code, content={"ok": False, "error": error})
+
+
+def _is_api_request(request: Request) -> bool:
+    return request.url.path.startswith("/api/")
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    if _is_api_request(request):
+        return _api_error(exc.status_code, str(exc.detail))
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    if _is_api_request(request):
+        return _api_error(422, "Invalid request payload.")
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 
 # -----------------------
@@ -155,9 +206,12 @@ def api_chat(inp: ChatIn, api_key: str = Depends(get_api_key)):
     try:
         answer = asyncio.run(run_chat(inp.message, s, use_history=True))
         return JSONResponse({"ok": True, "answer": answer})
-    except Exception as e:
-        # ✅ en vez de 500 ciego, devuelve el error al frontend
-        return JSONResponse({"ok": False, "error": str(e)})
+    except RuntimeError as exc:
+        return _api_error(502, str(exc))
+    except Exception:
+        return _api_error(
+            500, "Unexpected server error while processing the chat request."
+        )
 
 
 @app.post("/api/mcp")
@@ -176,8 +230,10 @@ def api_mcp(inp: MCPIn, api_key: str = Depends(get_api_key)):
 
     try:
         return JSONResponse(asyncio.run(_run()))
-    except Exception as e:
-        return JSONResponse({"ok": False, "error": str(e)})
+    except ValueError as exc:
+        return _api_error(400, str(exc))
+    except Exception:
+        return _api_error(502, "MCP tool execution failed.")
 
 
 @app.get("/api/health")
@@ -219,11 +275,14 @@ async def api_health(api_key: str = Depends(get_api_key)):
         mcp_detail = str(e)
 
     return {
+        "ok": web_ok and ollama_ok and mcp_ok,
         "web_ok": web_ok,
         "ollama_ok": ollama_ok,
         "ollama_detail": ollama_detail,
         "mcp_ok": mcp_ok,
         "mcp_detail": mcp_detail,
+        "model": s.model,
+        "auth_required": s.require_api_key,
     }
 
 
@@ -245,38 +304,34 @@ def api_history(
     s = load_settings()
 
     try:
-        con = sqlite3.connect(s.history_db)
-        con.row_factory = sqlite3.Row
+        init_db(s.history_db)
+        with closing(sqlite3.connect(s.history_db)) as con:
+            con.row_factory = sqlite3.Row
 
-        # total
-        total = con.execute("SELECT COUNT(*) AS c FROM chat").fetchone()["c"]
+            total = con.execute("SELECT COUNT(*) AS c FROM chat").fetchone()["c"]
 
-        where = []
-        params = []
+            where = []
+            params = []
 
-        if role:
-            where.append("role = ?")
-            params.append(role)
+            if role:
+                where.append("role = ?")
+                params.append(role)
 
-        if q:
-            where.append("content LIKE ?")
-            params.append(f"%{q}%")
+            if q:
+                where.append("content LIKE ?")
+                params.append(f"%{q}%")
 
-        limit = max(10, min(int(limit), 1000))
+            limit = max(10, min(int(limit), 1000))
 
-        query_parts = ["SELECT id, ts, role, content FROM chat"]
-        if where:
-            query_parts.append("WHERE " + " AND ".join(where))
-        query_parts.append("ORDER BY id DESC LIMIT ?")
+            query_parts = ["SELECT id, ts, role, content FROM chat"]
+            if where:
+                query_parts.append("WHERE " + " AND ".join(where))
+            query_parts.append("ORDER BY id DESC LIMIT ?")
 
-        query = " ".join(query_parts)
+            query = " ".join(query_parts)
 
-        # Usamos parámetros para evitar SQL Injection (nosec B608)
-        rows = con.execute(query, (*params, limit)).fetchall()
+            rows = con.execute(query, (*params, limit)).fetchall()
 
-        con.close()
-
-        # los devolvemos en orden cronológico (más antiguo -> más nuevo)
         items = [
             {
                 "id": r["id"],
@@ -289,5 +344,5 @@ def api_history(
 
         return {"ok": True, "total": total, "items": items}
 
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    except Exception:
+        return {"ok": False, "error": "Could not read chat history."}

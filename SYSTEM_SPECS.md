@@ -6,7 +6,7 @@
 ## 1. Hardware Mínimo Esperable (Bare-Metal/Laptop)
 
 - **CPU:** Apple Silicon (M1/M2/M3 Base) o procesador con instrucciones AVX2 (Intel Core de 8.va Gen o superior / Ryzen Base).
-- **RAM (Motor LLM):** Mínimo **8 GB netos** para los modelos ágiles y fuertemente cuantizados de codificación (Ej. `qwen2.5-coder:7b`).
+- **RAM (Motor LLM):** Mínimo **8 GB netos** para modelos ligeros o cuantizados (Ej. `qwen3:8b`).
 - **RAM (App FastAPI):** ~150 MB (Micro-footprint local).
 
 ## 2. Docker Engine (Para Host.Docker.Internal)

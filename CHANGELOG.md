@@ -52,3 +52,21 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### 📚 Documentación Relacionada
 - [README.md](README.md) | [ROADMAP.md](ROADMAP.md) | [AUTHORS.md](AUTHORS.md)
+
+## [Unreleased]
+
+### Changed
+- README, INSTALL, SECURITY, CONTRIBUTING y TROUBLESHOOTING reescritos para alinearlos con el estado real del repositorio.
+- Se eliminó la dependencia narrativa de badges externos y claims de seguridad no respaldados por controles verificables.
+- `Makefile` y workflows de GitHub Actions ahora comparten un contrato de validación más coherente.
+
+### Fixed
+- La autenticación por `API_KEY` ahora es realmente opcional cuando `REQUIRE_API_KEY=false`.
+- El backend devuelve errores más claros para payloads inválidos y fallos de Ollama/MCP.
+- `load_settings()` valida booleanos, URLs y defaults de configuración de forma más estricta.
+- `/api/history` inicializa la base si hace falta en vez de depender de estado previo.
+
+### Added
+- `make format-check`, `make smoke`, `make audit` y `make ci-local`.
+- Scripts `scripts/audit.sh` y `scripts/ci_local.sh` para validación reproducible.
+- Tests adicionales para auth, validación de payload y errores de upstream.

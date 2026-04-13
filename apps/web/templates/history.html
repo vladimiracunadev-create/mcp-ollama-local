@@ -69,19 +69,34 @@
       const limit = document.getElementById('limit').value || 200;
       const role = document.getElementById('role').value;
       const q = document.getElementById('q').value;
+      const out = document.getElementById('out');
+      out.textContent = "Cargando...";
 
       const params = new URLSearchParams();
       params.set("limit", limit);
       if(role) params.set("role", role);
       if(q) params.set("q", q);
 
-      const r = await fetch("/api/history?" + params.toString());
-      const j = await r.json();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      let r;
+      let j;
+      try{
+        r = await fetch("/api/history?" + params.toString(), { signal: controller.signal });
+        j = await r.json();
+      } catch (e) {
+        const detail = e && e.name === "AbortError" ? "timeout de la solicitud" : String(e);
+        document.getElementById('stats').textContent = "ERROR: " + detail;
+        out.textContent = "";
+        return;
+      } finally {
+        clearTimeout(timeout);
+      }
 
       const stats = document.getElementById('stats');
       if(!j.ok){
-        stats.textContent = "ERROR: " + (j.error || "desconocido");
-        document.getElementById('out').textContent = "";
+        stats.textContent = `ERROR (${r.status}): ` + (j.error || "desconocido");
+        out.textContent = "";
         return;
       }
 
@@ -112,8 +127,13 @@
         `;
       }
 
+      if(!j.items.length){
+        out.innerHTML = '<p class="muted">No hay resultados para ese filtro.</p>';
+        return;
+      }
+
       html += `</tbody></table>`;
-      document.getElementById('out').innerHTML = html;
+      out.innerHTML = html;
     }
 
     document.getElementById('refresh').addEventListener('click', load);

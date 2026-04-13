@@ -55,27 +55,46 @@
     const out = document.getElementById('out');
 
     async function postMCP(tool, args){
-      const r = await fetch('/api/mcp', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({tool, args})
-      });
-      const j = await r.json();
-      return j;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      try{
+        const r = await fetch('/api/mcp', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({tool, args}),
+          signal: controller.signal
+        });
+        const j = await r.json();
+        return {status: r.status, body: j};
+      } finally {
+        clearTimeout(timeout);
+      }
     }
 
-    document.getElementById('go').addEventListener('click', async () => {
+    const goBtn = document.getElementById('go');
+
+    goBtn.addEventListener('click', async () => {
       const tool = document.getElementById('tool').value;
       let args = {};
       try { args = JSON.parse(document.getElementById('args').value || "{}"); }
-      catch(e){ args = {}; }
+      catch(e){
+        out.textContent = "ERROR: Args debe ser JSON válido.";
+        return;
+      }
 
+      goBtn.disabled = true;
       out.textContent = "Procesando...";
       try{
-        const j = await postMCP(tool, args);
+        const {status, body: j} = await postMCP(tool, args);
+        if(!j.ok){
+          j.http_status = status;
+        }
         out.textContent = JSON.stringify(j, null, 2);
       }catch(e){
-        out.textContent = "ERROR: " + e;
+        const detail = e && e.name === "AbortError" ? "timeout de la solicitud" : String(e);
+        out.textContent = "ERROR: " + detail;
+      }finally{
+        goBtn.disabled = false;
       }
     });
   </script>

@@ -18,9 +18,9 @@ Inicia el servicio en segundo plano (Normalmente `ollama serve` o abriendo la ap
 
 Por defecto este proyecto asume que un LLM capaz de procesar **Calling Functions** eficientemente corre bajo el capó. Usa la CLI para bajar el modelo que necesites, tu máquina requerirá conexión a internet por esta única y última vez.
 
-Recomendamos **Qwen 2.5 Coder 7B**, es un genio absoluto para *Tools*:
+El default actual del proyecto es **Qwen 3 8B**:
 ```bash
-ollama pull qwen2.5-coder:7b
+ollama pull qwen3:8b
 ```
 
 Otras alternativas soportadas (si tienes RAM suficiente, +16GB):
@@ -33,7 +33,7 @@ ollama pull mistral-nemo
 
 Con el modelo ya almacenado en el caché de Ollama en tu sistema, diremos a nuestra App qué modelo cargar predeterminadamente.
 
-Por defecto, en `host/settings.py`, la aplicación llama a `qwen2.5-coder:7b` en `http://localhost:11434`. Si usaste un modelo diferente (como `llama3`), créate un archivo `.env` en la raíz de `mcp-ollama-local`:
+Por defecto, en `host/settings.py`, la aplicación llama a `qwen3:8b` en `http://localhost:11434`. Si usaste un modelo diferente, crea un archivo `.env` en la raíz de `mcp-ollama-local`:
 
 ```env
 MODEL=llama3

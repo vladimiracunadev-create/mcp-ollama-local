@@ -1,133 +1,218 @@
-# 🧠 MCP Ollama Local
+# MCP Ollama Local
 
-> **Web Local (FastAPI) + IA Local (Ollama) + Herramientas MCP**
+Interfaz web local para conversar con modelos servidos por Ollama, con un puente MCP acotado a un sandbox local y persistencia simple en SQLite.
 
-![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/status-active-success.svg)
-![Hardening](https://img.shields.io/badge/security-8--layers-blueviolet.svg)
+El objetivo del proyecto es ser útil y mantenible en entorno local. No intenta ser una plataforma multiusuario, ni un gateway público, ni una suite de seguridad “enterprise”.
 
----
+## Overview
 
-**mcp-ollama-local** es una plataforma ligera diseñada para ejecutar un entorno de chat con IA completamente local, integrando la potencia de **Ollama** con la flexibilidad del **Model Context Protocol (MCP)**.  
+- Backend FastAPI que expone páginas HTML y endpoints JSON.
+- Cliente HTTP hacia Ollama para `/api/chat`.
+- Servidor MCP por `stdio` con herramientas locales limitadas a `data/sandbox`.
+- Historial persistente en `data/chat_history.sqlite`.
+- Despliegue soportado en local, Docker y Kubernetes básicos.
 
-Permite conversar con LLMs locales (como `qwen`, `llama3`, etc.) y otorgarles capacidades reales mediante herramientas seguras (acceso a archivos, búsqueda, información del sistema), todo con persistencia en SQLite.
-
-> [!TIP]
-> 🎓 **¿Nuevo en IA o Docker?** Consulta nuestro [Manual para Principiantes (USER_MANUAL.md)](USER_MANUAL.md) para entender conceptos básicos y por qué esto es útil para ti.
-
----
-
-## 🚀 Características Principales
-
-- **🗣️ Chat Conversacional**: Interfaz web limpia para interactuar con tus modelos locales.
-- **🔌 Protocolo MCP**: Integración nativa para expandir las capacidades del modelo.
-- **🛠️ Herramientas Seguras**: Incluye herramientas de sistema (`system_info`, `list_files`, `grep_text`).
-- **💾 Historial Persistente**: Guardado de conversaciones en SQLite.
-- **🛡️ Seguridad en 8 Capas**: Protección integral desde el contenedor hasta la red.
-- **🔒 Privacidad Total**: Todo corre en tu máquina (`localhost`), 100% privado.
-- **🐳 Cloud Native**: Listo para Docker y Kubernetes (K8s).
-
-## 🏗️ Arquitectura
-
-Todo corre **100% local** en tu máquina. Cuatro capas bien definidas:
+## Arquitectura
 
 ```mermaid
 graph LR
-    subgraph CLIENTE["  Cliente  "]
-        U["Navegador Web"]
-    end
-
-    subgraph BACKEND["  Backend - Docker  "]
-        API["FastAPI Backend"]
-        DB["SQLite Historial"]
-    end
-
-    subgraph IA["  Motor de IA  "]
-        OL["Ollama LLM Local"]
-    end
-
-    subgraph TOOLS["  Herramientas MCP  "]
-        MCP["MCP Server"]
-        SB["Sandbox - Zona Segura"]
-    end
-
-    U -->|HTTP| API
-    API -->|Guarda sesion| DB
-    API -->|Prompt + Historial| OL
-    OL -->|Tool Call| MCP
-    MCP -->|Acceso controlado| SB
-    MCP -->|Resultado| OL
-    OL -->|Respuesta final| API
-    API -->|HTML| U
-
-    style CLIENTE fill:#1e3a5f,color:#e2e8f0,stroke:#60a5fa
-    style BACKEND fill:#14532d,color:#e2e8f0,stroke:#4ade80
-    style IA fill:#4a1d96,color:#e2e8f0,stroke:#a78bfa
-    style TOOLS fill:#78350f,color:#e2e8f0,stroke:#fbbf24
+    Browser["Browser"] --> Web["FastAPI web app"]
+    Web --> SQLite["SQLite history"]
+    Web --> Ollama["Ollama HTTP API"]
+    Web --> MCP["MCP bridge over stdio"]
+    MCP --> Sandbox["data/sandbox"]
 ```
 
-## 📊 Requisitos del Sistema
+Flujo normal:
 
-Para garantizar un rendimiento fluido, se recomiendan las siguientes especificaciones:
+1. El navegador llama al backend en `http://127.0.0.1:8000`.
+2. El backend valida la request, consulta Ollama y, si el modelo pide herramientas, abre una sesión MCP local.
+3. Las tools MCP solo leen dentro de `data/sandbox`.
+4. La conversación se guarda en SQLite cuando el chat usa historial.
 
-*   **CPU**: Apple Silicon (M1/M2/M3) o CPU con soporte AVX2.
-*   **RAM**: 8 GB (mínimo) / 16 GB (recomendado).
-*   **Ollama**: Instalado y ejecutándose (`ollama serve`).
-*   **Modelo**: Al menos un modelo descargado (ej. `ollama pull qwen2.5-coder:7b`).
+## Stack real
 
-## 📥 Modos de Despliegue
+- Python 3.13
+- FastAPI + Uvicorn
+- `httpx` para integración con Ollama
+- `mcp` para el bridge de tools
+- SQLite para persistencia local
+- Ruff, Pytest y Bandit para validación
 
-| Entorno | Comando Rápido |
-| :--- | :--- |
-| **💻 Local** | `make install && make run` |
-| **🐳 Docker** | `docker compose up -d` |
-| **☸️ Kubernetes** | `kubectl apply -f k8s/` |
+No hay Node, npm ni build frontend porque la UI es HTML/CSS/JS estático y hoy no lo necesita.
 
-> [!NOTE]
-> Para instrucciones detalladas, consulta la [Guía de Instalación (INSTALL.md)](INSTALL.md).
+## Seguridad real
 
-## 🧮 Comandos del Makefile
+Controles implementados hoy:
 
-| Comando | Descripción |
-| :--- | :--- |
-| `make install` | Configura entorno y dependencias. |
-| `make run` | Inicia el servidor en puerto 8000. |
-| `make lint` | Ejecuta auditoría de código con **Ruff/Bandit**. |
-| `make test` | Ejecuta la suite de pruebas con **Pytest**. |
+- Bind local por defecto en desarrollo (`127.0.0.1:8000`).
+- CORS configurable por `ALLOWED_ORIGINS`.
+- API key opcional; si `REQUIRE_API_KEY=true`, los endpoints sensibles exigen `X-API-Key`.
+- Rate limiting simple en memoria por IP.
+- Cabeceras de seguridad web razonables para una app local.
+- Sandbox MCP limitado a `data/sandbox`.
+- Contenedor no-root en Docker.
+- Validación reproducible con Ruff, Pytest, Bandit y `pip check`.
+- Auditoría de CVEs con `pip-audit` en workflow de seguridad.
 
-## 🛡️ Seguridad (Defensa en Profundidad)
+Límites importantes:
 
-Este proyecto implementa un modelo de seguridad robusto de **8 capas**:
+- El rate limit es en memoria y no sirve como control distribuido.
+- No hay gestión de usuarios, sesiones ni RBAC.
+- No se aíslan prompts ni respuestas del modelo frente a uso malicioso del operador local.
+- El sandbox protege el acceso de las tools MCP, no el sistema operativo completo.
+- HSTS solo aplica si sirves la app detrás de HTTPS real.
+- `pip-audit` necesita salida de red al servicio de advisories.
 
-1.  **📦 Contenedor**: Ejecución no-root (`appuser`) y puerto no privilegiado.
-2.  **🌐 Red**: Bind restringido a `127.0.0.1` en Docker Compose.
-3.  **🔑 Credenciales**: Soporte nativo para `API_KEY`.
-4.  **🕸️ Servidor Web**: Cabeceras `CSP`, `HSTS` y Rate Limiting.
-5.  **🛠️ Tools MCP**: Sandbox estricto para acceso a archivos.
-6.  **🔍 Autenticación**: Validación `X-API-Key` obligatoria (opcional).
-7.  **🚀 CI/CD**: Escaneo de vulnerabilidades (`Bandit`/`Pip-Audit`).
-8.  **⚙️ Supply Chain**: Control de integridad vía `.gitattributes`.
+## Instalación rápida
 
-## 🤝 Comunidad y Contribución
+### Local
 
-- **📜 Changelog**: Consulta el [CHANGELOG.md](CHANGELOG.md).
-- **✨ Créditos**: Conoce a los autores en [AUTHORS.md](AUTHORS.md).
-- **💡 Contribución**: Lee [CONTRIBUTING.md](CONTRIBUTING.md).
-- **⚖️ Código de Conducta**: Consulta [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+```bash
+uv sync --frozen
+make run
+```
 
----
+Abre [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-## 📚 Documentación Completa
+Requisitos:
 
-- [📖 Instalación (INSTALL.md)](INSTALL.md)
-- [🎓 Manual (USER_MANUAL.md)](USER_MANUAL.md)
-- [🕴️ RECRUITER (RECRUITER.md)](RECRUITER.md)
-- [🗺️ Arquitectura (FILE_ARCHITECTURE.md)](FILE_ARCHITECTURE.md)
-- [🛡️ Seguridad (SECURITY.md)](SECURITY.md)
-- [🔧 Troubleshooting (TROUBLESHOOTING.md)](TROUBLESHOOTING.md)
-- [🗺️ Roadmap (ROADMAP.md)](ROADMAP.md)
+- Ollama corriendo en `http://localhost:11434`
+- Un modelo disponible, por ejemplo:
 
-## 📄 Licencia
+```bash
+ollama pull qwen3:8b
+```
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.
+### Docker
+
+```bash
+docker compose up --build
+```
+
+El compose publica solo en `127.0.0.1:8000`.
+
+## Configuración
+
+Variables soportadas:
+
+| Variable | Default | Uso |
+| --- | --- | --- |
+| `OLLAMA_URL` | `http://localhost:11434` | URL base del servidor Ollama |
+| `MODEL` | `qwen3:8b` | Modelo usado por `/api/chat` |
+| `DATA_DIR` | `./data` | Ruta para SQLite y sandbox |
+| `API_KEY` | no definida | Clave opcional para proteger la API |
+| `REQUIRE_API_KEY` | `false` | Si es `true`, exige `X-API-Key` |
+| `ALLOWED_ORIGINS` | `http://localhost:8000,http://127.0.0.1:8000` | Lista CORS separada por comas |
+
+Ejemplo:
+
+```bash
+cat > .env <<'EOF'
+MODEL=qwen3:8b
+OLLAMA_URL=http://localhost:11434
+API_KEY=change-me
+REQUIRE_API_KEY=true
+ALLOWED_ORIGINS=http://127.0.0.1:8000
+EOF
+```
+
+## Validación
+
+Comandos soportados:
+
+```bash
+make lint
+make format
+make format-check
+make test
+make smoke
+make audit
+make ci-local
+```
+
+Qué hace cada uno:
+
+- `make lint`: `ruff check .`
+- `make format`: `ruff format .`
+- `make format-check`: verifica formato sin modificar archivos
+- `make test`: suite completa de pytest
+- `make smoke`: subset rápido de API/backend
+- `make audit`: `bandit` + `pip check`
+- `make ci-local`: replica el contrato principal de CI
+
+En GitHub Actions:
+
+- `ci.yml` ejecuta `make ci-local`
+- `security.yml` ejecuta `bandit` y `pip-audit`
+
+## Verificación externa opcional
+
+Además de las validaciones propias del repositorio, se puede ejecutar SafeSkill como revisión externa complementaria desde terminal, sin incorporarlo como dependencia estructural del proyecto:
+
+```bash
+npx skillsafe scan .
+npx skillsafe scan . --json > safeskill-report.json
+```
+
+Uso recomendado:
+
+- como señal adicional durante revisión manual o mantenimiento,
+- para inspeccionar comportamiento de red, acceso a archivos, prompt injection y coherencia entre contenido y código,
+- y para comparar findings externos con los controles reales del repositorio.
+
+Límites importantes:
+
+- SafeSkill no reemplaza tests, revisión técnica, validación local ni CI del proyecto.
+- Un score o badge externo no constituye una certificación del producto.
+- Cualquier finding debe interpretarse con contexto; los falsos positivos existen y los riesgos reales no deben descartarse solo porque un scan “salga bien”.
+
+Más detalle en [docs/security-verification.md](docs/security-verification.md).
+
+## Uso
+
+- `/` muestra estado básico de web, Ollama y MCP
+- `/chat` envía prompts al modelo
+- `/options` ejecuta tools MCP directamente
+- `/history` consulta el historial guardado en SQLite
+
+Ejemplos:
+
+```bash
+curl -sS http://127.0.0.1:8000/api/health
+curl -sS -X POST http://127.0.0.1:8000/api/mcp -H 'Content-Type: application/json' -d '{"tool":"system_info","args":{}}'
+curl -sS -X POST http://127.0.0.1:8000/api/chat -H 'Content-Type: application/json' -d '{"message":"hola"}'
+```
+
+Con API key obligatoria:
+
+```bash
+curl -sS http://127.0.0.1:8000/api/health -H 'X-API-Key: change-me'
+```
+
+## Troubleshooting
+
+- Si `/api/health` muestra `ollama_ok=false`, verifica `OLLAMA_URL` y `ollama serve`.
+- Si Docker no alcanza Ollama en Linux, revisa `host.docker.internal` y el bind del host.
+- Si `make audit` falla solo en `pip-audit`, revisa el workflow de seguridad o ejecuta el audit con salida de red.
+- Si habilitas `REQUIRE_API_KEY=true` sin `API_KEY`, la app no arrancará.
+
+Guías relacionadas:
+
+- [INSTALL.md](INSTALL.md)
+- [SECURITY.md](SECURITY.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+## Contribuciones
+
+Se aceptan fixes verificables, mejoras de documentación alineadas con el código y endurecimiento técnico razonable.
+
+No se consideran mejoras suficientes por sí solas:
+
+- badges externos,
+- claims de seguridad no respaldados por controles reales,
+- cambios cosméticos sin validación,
+- PRs que solo alteran marketing del README.
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md).

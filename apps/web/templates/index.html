@@ -257,7 +257,7 @@ OLLAMA_URL=http://localhost:11434</code></pre>
         </li>
         <li>
           Reinicia el servidor web (si estaba corriendo, primero Ctrl+C):
-          <br/><code>bash scripts/run_web.sh</code>
+          <br/><code>make run</code>
         </li>
       </ol>
 
@@ -269,7 +269,7 @@ OLLAMA_URL=http://localhost:11434</code></pre>
 # Edita .env:
 MODEL=&lt;NOMBRE_MODELO&gt;
 # Reinicia:
-bash scripts/run_web.sh</code></pre>
+make run</code></pre>
 
       <h3>🔧 Cambiar a otra IA local que NO sea Ollama</h3>
       <p class="muted">
@@ -314,8 +314,14 @@ bash scripts/run_web.sh</code></pre>
 
   <script>
     async function getJSON(url){
-      const r = await fetch(url);
-      return r.json();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try{
+        const r = await fetch(url, { signal: controller.signal });
+        return await r.json();
+      } finally {
+        clearTimeout(timeout);
+      }
     }
     function pill(ok){
       return `<span class="pill ${ok ? 'ok' : 'bad'}">${ok ? 'OK' : 'ERROR'}</span>`;

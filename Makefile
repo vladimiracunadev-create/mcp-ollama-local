@@ -1,25 +1,36 @@
-.PHONY: help install run lint format test clean
+.PHONY: help install run lint format format-check test audit smoke ci-local clean
 
-# Detectar si estamos en un entorno virtual activado o necesitamos usar 'uv run'
-UV_RUN := uv run
+VENV_BIN := .venv/bin
 
 help:  ## Muestra esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 install: ## Instala las dependencias del proyecto usando uv
-	uv sync
+	uv sync --frozen
 
 run: ## Ejecuta el servidor de desarrollo
-	$(UV_RUN) uvicorn apps.web.app:app --reload --host 0.0.0.0 --port 8000
+	$(VENV_BIN)/uvicorn apps.web.app:app --reload --host 127.0.0.1 --port 8000
 
-lint: ## Verifica el estilo de código con ruff
-	$(UV_RUN) ruff check .
+lint: ## Ejecuta el análisis estático local (ruff)
+	$(VENV_BIN)/ruff check .
 
 format: ## Formatea el código con ruff
-	$(UV_RUN) ruff format .
+	$(VENV_BIN)/ruff format .
 
-test: ## Ejecuta las pruebas con pytest
-	$(UV_RUN) pytest
+format-check: ## Verifica que el código ya esté formateado
+	$(VENV_BIN)/ruff format --check .
+
+test: ## Ejecuta la suite de pruebas con pytest
+	$(VENV_BIN)/pytest
+
+smoke: ## Ejecuta solo smoke tests del backend/API
+	$(VENV_BIN)/pytest -k "health or history or chat or auth"
+
+audit: ## Ejecuta checks de seguridad reproducibles
+	./scripts/audit.sh
+
+ci-local: ## Replica los checks principales de CI en local
+	./scripts/ci_local.sh
 
 clean: ## Limpia archivos temporales y cachés
 	find . -type d -name "__pycache__" -exec rm -rf {} +

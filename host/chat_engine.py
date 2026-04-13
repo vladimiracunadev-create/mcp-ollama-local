@@ -1,29 +1,28 @@
 import json
 import sqlite3
+from contextlib import closing
 
 from .mcp_bridge import mcp_tools_to_ollama, open_mcp_session
 from .ollama_client import ollama_chat
 
 
 def init_db(db_path):
-    con = sqlite3.connect(db_path)
-    con.execute("""
-      CREATE TABLE IF NOT EXISTS chat (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ts DATETIME DEFAULT CURRENT_TIMESTAMP,
-        role TEXT NOT NULL,
-        content TEXT NOT NULL
-      )
-    """)
-    con.commit()
-    con.close()
+    with closing(sqlite3.connect(db_path)) as con:
+        con.execute("""
+          CREATE TABLE IF NOT EXISTS chat (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts DATETIME DEFAULT CURRENT_TIMESTAMP,
+            role TEXT NOT NULL,
+            content TEXT NOT NULL
+          )
+        """)
+        con.commit()
 
 
 def save_msg(db_path, role, content):
-    con = sqlite3.connect(db_path)
-    con.execute("INSERT INTO chat(role, content) VALUES (?, ?)", (role, content))
-    con.commit()
-    con.close()
+    with closing(sqlite3.connect(db_path)) as con:
+        con.execute("INSERT INTO chat(role, content) VALUES (?, ?)", (role, content))
+        con.commit()
 
 
 def _tool_content_to_text(content) -> str:

@@ -1,47 +1,63 @@
-# 🤝 Guía de Contribución
+# Contributing
 
-> [!NOTE]
-> ¡Gracias por considerar contribuir a este ecosistema! Al ser parte de un ecosistema diseñado bajo los estándares de **observabilidad**, **reproducibilidad**, **calidad local-first** e **idempotencia**, mantenemos expectativas altas sobre la integridad del código para mantener este portafolio como un reflejo de ingeniería moderna.
+Gracias por contribuir.
 
-## Tipos de Contribuciones que Buscamos
+El criterio de aceptación del proyecto prioriza consistencia, fixes verificables y deuda técnica visible por encima de marketing o claims inflados.
 
-- 🐛 **Corrección de Bugs**: Resolver problemas identificados, preferiblemente sumando una prueba automatizada (`pytest`, etc.) que compruebe la solución.
-- 🚀 **Nuevas Funcionalidades**: Mejoras arquitectónicas, nuevas integraciones (e.g. con n8n, Ollama o LangGraph).
-- 📖 **Documentación**: Claridad, traducciones o diagramas de arquitectura explícitos (Mermaid o draw.io).
-- 🏗️ **Infraestructura**: Mejoras a los flujos DevOps (K8s, CI/CD, Makefiles, PWA Configurations).
+## Flujo esperado
 
-## Flujo de Trabajo (Git Flow)
+1. Parte desde `main`.
+2. Mantén el cambio acotado y justificable.
+3. Añade o ajusta tests si cambias comportamiento.
+4. Actualiza documentación si cambias comandos, defaults o límites.
+5. Ejecuta antes de abrir PR:
 
-Este proyecto usa un flujo estandarizado basado en ramas de características:
+```bash
+make lint
+make format-check
+make test
+make audit
+```
 
-1.  **Haz Fork** del repositorio a tu cuenta.
-2.  **Crea una rama** para tu funcionalidad o corrección partiendo del estado más reciente de la rama `main`:
-    ```bash
-    git checkout -b feature/nueva-magia-a-aws
-    # o para fixes
-    git checkout -b fix/auth-bypass
-    ```
-3.  **Desarrolla** tu funcionalidad.
-    - Asegúrate de seguir la filosofía del repositorio. Si estamos usando `uv` para Python de alto rendimiento, no uses otra cosa a menos que justifiques el cambio. 
-    - Comprueba los *guardsrails* existentes en el proyecto.
-4.  **Haz Commit** a tus cambios. 
-    Usamos **Conventional Commits** (`feat:`, `fix:`, `docs:`, `chore:`, etc.):
-    ```bash
-    git commit -m "feat: implementar circuit breaker global para llamadas fallidas"
-    ```
-5.  **Haz Push** a tu rama:
-    ```bash
-    git push origin feature/nueva-magia-a-aws
-    ```
-6.  **Abre un Pull Request (PR)** hacia la rama `main` de este repositorio.
+Opcionalmente, si quieres aportar contexto adicional en un PR de seguridad o hardening, puedes adjuntar una verificación externa complementaria:
 
-## Estándares del Código
+```bash
+npx skillsafe scan .
+npx skillsafe scan . --json > safeskill-report.json
+```
 
-*   **Test-Driven Development (opcional pero recomendado)**: Incluye comandos para correr tus pruebas. Si el repositorio tiene Action de GitHub con `mypy` o `bandit`, asegúrate de que tus modificaciones pasen localmente (`make test`, `make lint` o scripts disponibles en el ecosistema).
-*   **Docker-first**: Cualquier dependencia requerida debe estar documentada y disponible mediante `docker-compose.yml` para levantar la arquitectura en menos de 60 segundos u obviar la fricción del setup local.
-*   **Documentación obligatoria**: Si es un cambio mayor, no olvides la documentación en el README y si es aplicable, un diagrama explicativo.
+No es un requisito de contribución. Si lo usas, resume los hallazgos relevantes con criterio técnico en lugar de adjuntar solo un score o badge.
 
----
+## Qué tipo de cambios sí ayudan
 
-### 📚 Documentación Relacionada
-- [README.md](README.md) | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | [CHANGELOG.md](CHANGELOG.md)
+- fixes de bugs con reproducción clara,
+- endurecimiento de seguridad con evidencia,
+- mejoras de validación local o CI,
+- documentación alineada con la implementación,
+- mejoras de UX técnica sin sobrecargar la UI.
+
+## Qué tipo de cambios normalmente no se aceptan solos
+
+- badges externos en README,
+- promesas de seguridad sin controles verificables,
+- placeholders o texto aspiracional,
+- refactors grandes sin beneficio operativo claro,
+- dependencia nueva pesada sin justificación fuerte.
+
+## Estilo y alcance
+
+- Usa Python 3.13 y el flujo con `uv`.
+- No introduzcas Node/npm salvo necesidad técnica real.
+- Mantén la UI simple; este repo no necesita una build chain frontend.
+- Si cambias configuración, refleja el cambio en `README.md`, `INSTALL.md` o `SECURITY.md`.
+
+## Pull requests de seguridad o escaneo
+
+Si propones una mejora de seguridad:
+
+- incluye el hallazgo real,
+- explica impacto y condiciones de explotación,
+- aporta fix verificable,
+- y añade validación o test cuando corresponda.
+
+Un PR que solo agregue un badge o enlace a un escáner externo no se considera una mejora suficiente del producto.

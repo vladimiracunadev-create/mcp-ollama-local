@@ -11,7 +11,7 @@ timeline
                : Herramientas list_files grep_text system_info
                : Persistencia SQLite
         v1.0.x : Autenticacion API_KEY
-               : Hardening seguridad 8 capas
+               : Hardening pragmático de seguridad
                : Docker y Kubernetes listos
                : Pipeline CI/CD GitHub Actions
     section En Progreso
@@ -32,7 +32,7 @@ timeline
 - [ ] Agregar soporte para múltiples modelos en Ollama simultáneamente.
 - [ ] Mejorar la interfaz de usuario con temas oscuros.
 - [x] Implementar autenticación básica (`API_KEY`).
-- [x] Hardening de seguridad integral (8 capas).
+- [x] Hardening de seguridad pragmático y verificable.
 
 ### v1.2.0
 - [ ] Soporte para ejecución de comandos seguros.

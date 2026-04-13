@@ -1,83 +1,140 @@
-# 🛡️ Política de Seguridad y Divulgación Responsable
+# Security Policy
 
-> [!IMPORTANT]
-> La seguridad, trazabilidad y observabilidad son pilares de este ecosistema de proyectos. Tomamos con la mayor seriedad cualquier reporte referente a la integridad de nuestras aplicaciones.
+## Scope
 
-## 🏗️ Versiones Soportadas
+Este repositorio es una aplicación local-first para uso individual o de laboratorio. La postura de seguridad está orientada a:
 
-Actualmente, solo la versión `main` (última iteración o tag de release) en los distintos repositorios recibe actualizaciones y parches de seguridad directos. Las versiones antiguas legadas bajo tags sin soporte no están cubiertas a menos que se indique estrictamente lo contrario en las notas del repositorio.
+- reducir exposición accidental,
+- acotar el alcance de las tools MCP,
+- endurecer defaults,
+- y hacer verificables los checks básicos en local y CI.
 
-## 🔓 Cómo Reportar una Vulnerabilidad
+No está diseñado como servicio multiusuario expuesto a internet sin un reverse proxy, autenticación más fuerte y controles operacionales adicionales.
 
-> [!CAUTION]
-> **Por favor, no reportes problemas de seguridad a través de Issues públicos de GitHub.** Esto expone la vulnerabilidad a actores maliciosos antes de que el parche pueda ser emitido.
+## Supported versions
 
-Para reportes de seguridad, fallos críticos de integridad o configuraciones por defecto mitigables (como credenciales expuestas, RCE, inyecciones de código severas, o bypass de autenticación), sigue estos pasos:
+Solo la rama `main` recibe correcciones activas.
 
-1. **Envía un correo electrónico** directamente a `vladimir.acuna.dev@gmail.com`.
-2. Incluye en tu correo:
-   - El ecosistema o repositorio afectado (ej. `mcp-ollama-local`).
-   - Los pasos detallados para reproducir la vulnerabilidad.
-   - Opcionalmente, una prueba de concepto (PoC).
+## Reportar vulnerabilidades
 
-Te contactaré a la brevedad posible (generalmente en menos de 48 horas laborales).
+No publiques vulnerabilidades explotables en issues públicos.
 
-## 📊 Auditoría y Análisis Estático (SAST)
+Envía un reporte a `vladimir.acuna.dev@gmail.com` con:
 
-Para garantizar la integridad del código y las dependencias, el proyecto utiliza:
-- **Bandit**: Analiza el código fuente en busca de patrones de programación inseguros.
-- **Pip-Audit**: Escanea las dependencias instaladas contra bases de datos de vulnerabilidades (CVE).
-- **Ruff**: Asegura la calidad y consistencia del código.
+- repositorio afectado,
+- impacto,
+- pasos de reproducción,
+- versión o commit,
+- y, si aplica, PoC mínima.
 
-## 🛡️ Arquitectura de Seguridad en 8 Capas
+## Controles implementados
 
-Hemos implementado un modelo de seguridad basado en **Defense in Depth**:
+### Aplicación
 
-1. **Contenedor**: Proceso ejecuta como usuario no-root (`appuser`), puerto no privilegiado (8000), imágenes con versiones fijas y `HEALTHCHECK` activo.
-2. **Red**: Blindaje de red en `docker-compose.yml` vinculando puertos exclusivamente a `127.0.0.1`.
-3. **Credenciales**: Soporte para `API_KEY` con opción de ser obligatorio (`REQUIRE_API_KEY=true`).
-4. **Servidor Web**: Cabeceras de seguridad activas (`CSP`, `HSTS`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`) y Rate Limiting básico (60 req/min).
-5. **Herramientas MCP**: Aislamiento total en sandbox (`data/sandbox`) con validación de rutas y enmascaramiento de rutas del sistema host.
-6. **Autenticación**: Capa de validación por cabecera `X-API-Key` en todos los endpoints sensibles.
-7. **CI/CD**: Pipeline automatizado en GitHub Actions para detectar vulnerabilidades en dependencias y fallos de linting.
-8. **Supply Chain**: Consistencia de line endings (`LF`) forzada vía `.gitattributes` para evitar errores de ejecución en Docker.
+- Validación de payload en endpoints JSON.
+- Manejo explícito de errores para requests inválidas y fallos de upstream.
+- API key opcional mediante `X-API-Key`; cuando `REQUIRE_API_KEY=true`, es obligatoria.
+- Rate limiting simple en memoria.
+- Cabeceras web: `CSP`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- `Strict-Transport-Security` solo se emite bajo HTTPS real.
 
-### Modelo Visual - Defense in Depth
+### Integración con Ollama
 
-```mermaid
-flowchart TB
-    subgraph L8["Capa 8 - Supply Chain"]
-        SC["gitattributes LF forzado"]
-    end
-    subgraph L7["Capa 7 - CI/CD"]
-        CI["GitHub Actions - Bandit y Pip-Audit"]
-    end
-    subgraph L6["Capa 6 - Autenticacion"]
-        AK["X-API-Key en endpoints sensibles"]
-    end
-    subgraph L5["Capa 5 - Sandbox MCP"]
-        SB["Acceso restringido a data/sandbox"]
-    end
-    subgraph L4["Capa 4 - Servidor Web"]
-        SW["CSP + HSTS + Rate Limit 60 req/min"]
-    end
-    subgraph L3["Capa 3 - Credenciales"]
-        CR["API_KEY configurable en .env"]
-    end
-    subgraph L2["Capa 2 - Red"]
-        NW["Bind exclusivo a 127.0.0.1"]
-    end
-    subgraph L1["Capa 1 - Contenedor"]
-        CT["appuser no-root + HEALTHCHECK"]
-    end
+- Timeouts explícitos.
+- Mensajes de error más trazables cuando Ollama no responde o devuelve payload inválido.
+- No se exponen secretos del servidor al cliente por defecto.
 
-    L8 --> L7 --> L6 --> L5 --> L4 --> L3 --> L2 --> L1
+### MCP / filesystem
+
+- Las tools MCP operan solo dentro de `data/sandbox`.
+- Se bloquean rutas con `..` y escapes fuera del sandbox.
+- No hay ejecución arbitraria de comandos del sistema.
+
+### Persistencia
+
+- SQLite local para historial.
+- El archivo vive bajo `DATA_DIR`; no hay cifrado en reposo incorporado.
+
+### Contenedor
+
+- Imagen multi-stage.
+- Usuario no-root.
+- Puerto de aplicación no privilegiado.
+- `docker-compose.yml` publica solo en `127.0.0.1`.
+
+## Validación reproducible
+
+Local:
+
+```bash
+make lint
+make test
+make audit
+make ci-local
 ```
 
-> [!NOTE]
-> Cada capa actua de forma independiente. Si una falla, las demas siguen protegiendo el sistema.
+CI:
 
----
+- `.github/workflows/ci.yml`: contrato principal de calidad
+- `.github/workflows/security.yml`: `bandit` + `pip-audit`
 
-### 📚 Documentación Relacionada
-- [README.md](README.md) | [RECRUITER.md](RECRUITER.md) | [SYSTEM_SPECS.md](SYSTEM_SPECS.md)
+Notas:
+
+- `make audit` es offline-friendly: usa `bandit` + `pip check`.
+- `pip-audit` requiere acceso a advisories externos y por eso vive en el workflow de seguridad.
+
+## Verificación externa complementaria
+
+El proyecto puede revisarse también con herramientas externas de análisis, incluyendo SafeSkill, siempre como capa complementaria y no como criterio principal de confianza.
+
+Ejemplos:
+
+```bash
+npx skillsafe scan .
+npx skillsafe scan . --json > safeskill-report.json
+```
+
+En términos generales, este tipo de herramienta puede ayudar a detectar o resaltar:
+
+- comportamiento de red y dependencias externas observables,
+- acceso a archivos y superficie de interacción con el host,
+- patrones asociados a prompt injection o uso riesgoso de tools,
+- discrepancias entre lo que el repositorio declara y lo que realmente implementa.
+
+Interpretación recomendada:
+
+- trata los resultados como insumo para revisión, no como veredicto final,
+- valida cada finding contra el código, la configuración y el contexto operativo,
+- distingue entre exposición real, decisión consciente de diseño y falso positivo,
+- y no conviertas un score externo en una “nota oficial” del proyecto.
+
+Si se comparte un reporte externo en un issue o PR, debe acompañarse de explicación técnica, impacto y propuesta concreta de corrección cuando corresponda.
+
+## Límites y no-objetivos
+
+- No hay autenticación de usuarios ni sesiones.
+- No hay protección contra un operador local malicioso.
+- No hay aislamiento de proceso tipo VM o container por cada tool call.
+- El rate limiting no sustituye WAF, API gateway ni controles distribuidos.
+- CORS no es un control de autenticación.
+- Si expones la app fuera de localhost, debes añadir TLS, reverse proxy, autenticación más fuerte y observabilidad operativa.
+
+## Falsos positivos frecuentes
+
+Hallazgos que suelen aparecer en escáneres genéricos y requieren contexto:
+
+- `B104` por bind en `0.0.0.0` dentro de contenedor: aceptable cuando el publish externo sigue restringido a `127.0.0.1` en compose.
+- “No HSTS”: correcto cuando el entorno de desarrollo sirve HTTP plano; HSTS solo tiene sentido detrás de HTTPS.
+- “Wildcard CORS”: sería hallazgo real si se configurara `*`; el default actual es una lista local explícita.
+- “SQLite insecure”: depende del contexto. Aquí el riesgo principal no es SQL injection sino exposición del host o permisos de filesystem.
+
+## Política de contribuciones de seguridad
+
+Se priorizan PRs que:
+
+- corrijan una debilidad demostrable,
+- incluyan validación o test,
+- documenten límites y trade-offs,
+- y mantengan compatibilidad operativa.
+
+Un badge externo o un enlace a un escáner no reemplaza fixes técnicos verificables.

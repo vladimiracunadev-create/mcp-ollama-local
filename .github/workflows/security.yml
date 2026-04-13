@@ -18,24 +18,16 @@ jobs:
         version: "0.5.21"
 
     - name: Set up Python
-      run: uv python install
+      run: uv python install 3.13
 
     - name: Install dependencies
-      run: uv sync --frozen
+      run: make install
 
-    - name: Lint with Ruff
-      run: |
-        uv pip install ruff
-        uv run ruff check .
+    - name: Install pip-audit
+      run: uv pip install --python .venv/bin/python pip-audit
 
-    - name: Audit Dependencies
-      run: |
-        uv pip install pip-audit
-        # Audit excluding dev dependencies if possible, or audit the whole venv
-        uv run pip-audit
+    - name: Static application security scan
+      run: ./.venv/bin/bandit $(find apps host mcp_server -name '*.py' ! -name '._*' -print) main.py -c pyproject.toml
 
-    - name: Scan for secrets (Placeholder for Gitleaks)
-      run: |
-        echo "Running simplified secret scan..."
-        # Check for hardcoded API keys in settings or .env files pattern
-        grep -rE "API_KEY=[a-zA-Z0-9]{32,}" . && exit 1 || exit 0
+    - name: Dependency vulnerability audit
+      run: ./.venv/bin/pip-audit

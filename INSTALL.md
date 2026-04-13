@@ -1,120 +1,87 @@
-# 📦 Guía de Instalación y Despliegue
+# Instalación y Quickstart
 
-Este documento detalla cómo ejecutar `mcp-ollama-local` en diferentes entornos.
+## Requisitos
 
-> [!TIP]
-> Si eres nuevo en IA local, te recomendamos la **Opción 2 (Docker)** para evitar complicaciones con dependencias de Python.
+- Python 3.13
+- `uv`
+- Ollama instalado y corriendo
+- Un modelo descargado, por ejemplo `qwen3:8b`
 
----
+## Opción 1: local
 
-## 💻 Opción 1: Local (Bare Metal)
-Recomendado para desarrollo o uso personal rápido en Mac/Linux.
-
-### Requisitos
-- Python 3.13+
-- `uv` (recomendado)
-- Ollama corriendo localmente
-
-### Pasos
-1.  **Clonar e Instalar**:
-    ```bash
-    git clone https://github.com/vladimiracunadev-create/mcp-ollama-local.git
-    cd mcp-ollama-local
-    make install
-    ```
-2.  **Ejecutar**:
-    ```bash
-    make run
-    ```
-3.  **Acceder**: [http://localhost:8000](http://localhost:8000)
-
-### Configuración Avanzada (Variables de Entorno)
-Puedes personalizar el comportamiento sin tocar el código:
-
-| Variable | Descripción | Valor por Defecto |
-| :--- | :--- | :--- |
-| `OLLAMA_URL` | URL del servidor Ollama | `http://localhost:11434` |
-| `MODEL` | Modelo LLM a utilizar | `qwen2.5-coder:7b` |
-| `DATA_DIR` | Ruta para base de datos y logs | `./data` (en raíz del proyecto) |
-
-Ejemplo:
 ```bash
-MODEL=llama3:8b make run
+git clone https://github.com/vladimiracunadev-create/mcp-ollama-local.git
+cd mcp-ollama-local
+uv sync --frozen
+ollama pull qwen3:8b
+make run
 ```
 
----
+Abrir:
 
-## 🐳 Opción 2: Docker (Recomendado)
-Ideal para aislar la aplicación y sus dependencias.
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-> [!NOTE]
-> Esta opción ya incluye configuraciones de seguridad rootless y healthchecks automáticos.
+## Configuración opcional
 
-### Requisitos
-- Docker y Docker Compose
-- Ollama corriendo en el host
+Crea `.env` si necesitas cambiar modelo, URL o protección por API key:
 
-### Pasos
-1.  **Construir y Levantar**:
-    ```bash
-    docker compose up --build -d
-    ```
-    *Nota: Esto montará `./data` localmente para persistir tu historial.*
-
-2.  **Acceder**: [http://localhost:8000](http://localhost:8000)
-
-3.  **Detener**:
-    ```bash
-    docker compose down
-    ```
-
-### ⚠️ Conexión con Ollama en Docker
-La configuración por defecto asume que puedes acceder al host vía `host.docker.internal`.
-
-> [!TIP]
-> - **Mac/Windows**: Funciona automáticamente.
-> - **Linux**: Debes asegureras de que Docker soporte `host-gateway` (incluido en `docker-compose.yml`). Si Ollama solo escucha en `127.0.0.1`, configúralo para escuchar en `0.0.0.0` con `OLLAMA_HOST=0.0.0.0 ollama serve`.
-
-### 📥 Descarga del Modelo (REQUERIDO)
-Antes de usar la aplicación, **debes descargar un modelo LLM** en tu máquina host:
-
-> [!IMPORTANT]
-> Los modelos son archivos grandes (5-20GB) que se almacenan localmente. NO se incluyen en el repositorio de GitHub. Debes tener Ollama instalado primero.
 ```bash
-ollama pull qwen2.5-coder:7b
-# O cualquier otro modelo compatible
+MODEL=qwen3:8b
+OLLAMA_URL=http://localhost:11434
+DATA_DIR=./data
+# API_KEY=change-me
+# REQUIRE_API_KEY=false
+# ALLOWED_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
 ```
-**Nota**: Los modelos son archivos grandes (5-20GB) que se almacenan localmente. NO se incluyen en el repositorio de GitHub.
 
----
+## Opción 2: Docker
 
-## Opción 3: Kubernetes (K8s)
-Para despliegues escalables o en clústeres domésticos.
+```bash
+docker compose up --build
+```
 
-### Pasos
-1.  **Construir Imagen** (o usar registro):
-    ```bash
-    docker build -t mcp-ollama-local:latest .
-    # Si usas minikube/kind, carga la imagen en el nodo primero.
-    ```
+Características reales del despliegue:
 
-2.  **Aplicar Manifiestos**:
-    ```bash
-    kubectl apply -f k8s/deploy.yaml
-    kubectl apply -f k8s/service.yaml
-    ```
+- proceso no-root,
+- persistencia montada en `./data`,
+- publish en `127.0.0.1:8000`,
+- healthcheck HTTP local.
 
-3.  **Acceder**:
-    Haz un Port-Forward al servicio:
-    ```bash
-    kubectl port-forward svc/mcp-ollama-service 8080:80
-    ```
-    Visita [http://localhost:8080](http://localhost:8080).
+Consideraciones:
 
-### Nota sobre Persistencia en K8s
-El despliegue usa un `PersistentVolumeClaim` (PVC) de 1GB. Asegúrate de tener configurado un StorageClass por defecto en tu clúster.
+- En Mac/Windows, `host.docker.internal` suele funcionar de forma directa.
+- En Linux, revisa soporte `host-gateway` y el bind de Ollama.
+- Si Ollama escucha solo en `127.0.0.1`, el contenedor puede no alcanzarlo.
 
----
+## Opción 3: Kubernetes
 
-### 📚 Documentación Relacionada
-- [README.md](README.md) | [USER_MANUAL.md](USER_MANUAL.md) | [SECURITY.md](SECURITY.md)
+Los manifiestos incluidos son básicos y útiles para laboratorio, no una distribución de producción.
+
+```bash
+docker build -t mcp-ollama-local:latest .
+kubectl apply -f k8s/deploy.yaml
+kubectl apply -f k8s/service.yaml
+kubectl port-forward svc/mcp-ollama-service 8080:80
+```
+
+Notas:
+
+- El `PersistentVolumeClaim` es simple y asume un `StorageClass` funcional.
+- `OLLAMA_URL` en `k8s/deploy.yaml` debe ajustarse a tu topología real.
+
+## Validación posterior a la instalación
+
+```bash
+make lint
+make test
+make audit
+curl -sS http://127.0.0.1:8000/api/health
+```
+
+## Troubleshooting corto
+
+- Si `make run` arranca pero el chat falla, consulta `/api/health`.
+- Si Docker responde pero `ollama_ok=false`, revisa conectividad hacia `host.docker.internal:11434`.
+- Si activas `REQUIRE_API_KEY=true`, recuerda enviar `X-API-Key`.
+
+Más detalles en [TROUBLESHOOTING.md](TROUBLESHOOTING.md).

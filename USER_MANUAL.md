@@ -104,7 +104,7 @@ Aunque el proyecto es para uso local, hemos incluido herramientas para proteger 
 Puedes usar una `API_KEY`. Para activarla:
 1.  Edita tu archivo `.env`.
 2.  Descomenta la línea `API_KEY=tu_secreto`.
-3.  La web y la API ahora requerirán que envíes esa clave para funcionar.
+3.  Si además defines `REQUIRE_API_KEY=true`, la web y la API requerirán esa clave para funcionar.
 
 ### 2. Control de Velocidad (Rate Limiting)
 Para evitar que un proceso automático o un error sature tu computadora, el servidor permite un máximo de **60 peticiones por minuto**. Si hablas demasiado rápido, verás un mensaje de "Slow down".

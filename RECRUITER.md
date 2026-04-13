@@ -24,13 +24,13 @@ La carpeta `.github/workflows` define mi acercamiento inamovible para equipos di
 - **Pytest/Cov:** Evaluaciones forzadas que interrumpen integraciones si caen los tests e-2-e locales (de FastApi) implementados para evitar regresiones de interfaz.
 
 ### 4. Seguridad en 8 Capas (Defense in Depth)
-He transformado una herramienta local en una aplicación "Hardened" mediante 8 capas de protección:
+He transformado una herramienta local en una aplicación con controles concretos y verificables:
 1. **Container Hardening**: Rootless, Healthchecks y pinning de imágenes.
 2. **Network Isolation**: Localhost-only binding por defecto.
-3. **App Security**: Middlewares de headers (CSP, HSTS) y Rate Limiting.
+3. **App Security**: Middlewares de headers, HSTS condicional bajo HTTPS y Rate Limiting simple.
 4. **Auth Layer**: Soporte nativo para API_KEY obligatoria.
 5. **Tool Sandbox**: Validación estricta de rutas MCP y enmascaramiento de OS.
-6. **SAST/Audit**: Integración nativa de Bandit y Pip-Audit en el pipeline.
+6. **SAST/Audit**: Integración de Bandit y auditoría de dependencias en CI.
 
 ### 3. Observabilidad, Mantenibilidad y DX de Herramientas Rápidas
 - Fuerte orientación al **Developer Experience (DX)** usando la reciente y veloz librería **`uv` de Astral** (Rust-based environment) para resolver el ecosistema Python, huyendo de las arcaicas instalaciones eternas de dependencias y mutabilidad (*lockfiles* absolutos).

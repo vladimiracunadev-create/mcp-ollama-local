@@ -39,8 +39,7 @@
       <h3>Respuesta</h3>
       <pre id="out">(aquí aparecerá la respuesta)</pre>
       <p class="muted">
-        Si no aparece nada: mira el terminal del servidor.
-        Debes ver un log <code>POST /api/chat 200</code>.
+        Si falla, revisa <code>/api/health</code> y los logs del servidor.
       </p>
     </div>
 
@@ -59,31 +58,43 @@
     const hint = document.getElementById('hint');
 
     async function postChat(message){
-      const r = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({message})
-      });
-      const j = await r.json();
-      return j;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
+      try{
+        const r = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({message}),
+          signal: controller.signal
+        });
+        const j = await r.json();
+        return {status: r.status, body: j};
+      } finally {
+        clearTimeout(timeout);
+      }
     }
 
-    document.getElementById('send').addEventListener('click', async () => {
+    const sendBtn = document.getElementById('send');
+
+    sendBtn.addEventListener('click', async () => {
       const message = document.getElementById('msg').value.trim();
       if(!message){ return; }
 
+      sendBtn.disabled = true;
       hint.textContent = " (procesando...)";
       out.textContent = "Procesando...";
       try{
-        const j = await postChat(message);
+        const {status, body: j} = await postChat(message);
         if(j.ok){
           out.textContent = j.answer;
         }else{
-          out.textContent = "ERROR: " + (j.error || "desconocido");
+          out.textContent = `ERROR (${status}): ` + (j.error || "desconocido");
         }
       }catch(e){
-        out.textContent = "ERROR de red o servidor: " + e;
+        const detail = e && e.name === "AbortError" ? "timeout de la solicitud" : String(e);
+        out.textContent = "ERROR de red o servidor: " + detail;
       }finally{
+        sendBtn.disabled = false;
         hint.textContent = "";
       }
     });
