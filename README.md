@@ -288,6 +288,13 @@ Guías relacionadas:
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - [docs/security-trust-profile.md](docs/security-trust-profile.md)
+- [docs/aws-migration.md](docs/aws-migration.md) — guía completa de migración a AWS (arquitectura, paso a paso, costos, seguridad)
+
+## ☁️ Migración a la nube (AWS)
+
+Existe un blueprint detallado para llevar este proyecto a AWS sin perder su filosofía local-first: arquitectura objetivo, mapeo de componentes locales → servicios AWS, tres perfiles de despliegue (demo barata, producción mínima, Bedrock sin GPU), paso a paso end-to-end, estimación de costos por perfil, controles de seguridad y checklist de migración.
+
+➡️ Ver **[docs/aws-migration.md](docs/aws-migration.md)**.
 
 ## 🤝 Contribuciones
 
