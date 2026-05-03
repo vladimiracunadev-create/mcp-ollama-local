@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.126.0",
     "httpx>=0.28.1",
-    "mcp[cli]>=1.25.0",
+    "mcp[cli]>=1.27.0",
     "uvicorn>=0.40.0",
     # Transitive deps pinned to avoid known CVEs:
     # python-dotenv  CVE-2026-28684  fix in 1.2.2
