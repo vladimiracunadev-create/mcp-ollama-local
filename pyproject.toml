@@ -5,7 +5,7 @@ description = "Local-first chat UI for Ollama with a constrained MCP tool bridge
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.126.0",
+    "fastapi>=0.136.1",
     "httpx>=0.28.1",
     "mcp[cli]>=1.25.0",
     "uvicorn>=0.40.0",
