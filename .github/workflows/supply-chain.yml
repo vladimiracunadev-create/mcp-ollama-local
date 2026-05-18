@@ -33,7 +33,7 @@ jobs:
         run: make sbom
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom
           path: artifacts/sbom.cdx.json
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload signed provenance files
         if: github.event_name == 'release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-signature
           path: |
