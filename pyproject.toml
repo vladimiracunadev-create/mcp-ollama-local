@@ -34,7 +34,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "bandit>=1.9.4",
-    "mypy>=1.14.1",
+    "mypy>=1.20.2",
     # pytest CVE-2025-71176 fixed in 9.0.3
     "pytest>=9.0.3",
     "pytest-cov>=7.0.0",
