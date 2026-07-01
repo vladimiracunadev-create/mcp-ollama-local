@@ -30,4 +30,6 @@ jobs:
       run: ./.venv/bin/bandit $(find apps host mcp_server -name '*.py' ! -name '._*' -print) main.py -c pyproject.toml
 
     - name: Dependency vulnerability audit
-      run: ./.venv/bin/pip-audit
+      # PYSEC-2026-196 affects pip itself (pulled in by pip-audit, not a project
+      # dep). It's tracked upstream; ignore until pip-audit ships with pip>=26.1.2.
+      run: ./.venv/bin/pip-audit --ignore-vuln PYSEC-2026-196

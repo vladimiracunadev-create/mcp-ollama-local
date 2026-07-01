@@ -5,15 +5,30 @@ description = "Local-first chat UI for Ollama with a constrained MCP tool bridge
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.126.0",
+    # fastapi 0.133.0 removed the starlette<1.0 cap; required for starlette>=1.3.1.
+    "fastapi>=0.133.0",
     "httpx>=0.28.1",
     "mcp[cli]>=1.25.0",
     "uvicorn>=0.40.0",
-    # Transitive deps pinned to avoid known CVEs:
-    # python-dotenv  CVE-2026-28684  fix in 1.2.2
-    # python-multipart CVE-2026-40347 fix in 0.0.26
+    # Direct and transitive deps pinned to avoid known CVEs:
+    # python-dotenv      CVE-2026-28684                       fix in 1.2.2
+    # python-multipart   CVE-2026-53538/53539/53540           fix in 0.0.31
+    # starlette          CVE-2026-48817/48818, PYSEC-2026-*   fix in 1.3.1
+    # idna               PYSEC-2026-215                        fix in 3.15
+    # urllib3            PYSEC-2026-141/142                    fix in 2.7.0
+    # msgpack            GHSA-6v7p-g79w-8964                   fix in 1.2.1
+    # cryptography       GHSA-537c-gmf6-5ccf                   fix in 48.0.1
+    # pydantic-settings  GHSA-4xgf-cpjx-pc3j                   fix in 2.14.2
+    # pyjwt              PYSEC-2026-175/176/177/178/179        fix in 2.13.0
     "python-dotenv>=1.2.2",
-    "python-multipart>=0.0.26",
+    "python-multipart>=0.0.31",
+    "starlette>=1.3.1",
+    "idna>=3.15",
+    "urllib3>=2.7.0",
+    "msgpack>=1.2.1",
+    "cryptography>=48.0.1",
+    "pydantic-settings>=2.14.2",
+    "pyjwt>=2.13.0",
 ]
 
 [dependency-groups]
