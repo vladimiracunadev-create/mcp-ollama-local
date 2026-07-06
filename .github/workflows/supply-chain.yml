@@ -18,10 +18,10 @@ jobs:
     name: SBOM and provenance artifacts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
 
       - name: Set up Python
         run: uv python install 3.13
@@ -33,14 +33,14 @@ jobs:
         run: make sbom
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: sbom
           path: artifacts/sbom.cdx.json
 
       - name: Install Cosign
         if: github.event_name == 'release'
-        uses: sigstore/cosign-installer@v3
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
 
       - name: Sign SBOM with keyless Cosign
         if: github.event_name == 'release'
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload signed provenance files
         if: github.event_name == 'release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: sbom-signature
           path: |

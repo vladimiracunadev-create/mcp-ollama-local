@@ -1,5 +1,5 @@
 # 1. Fase de Construcción (Builder)
-FROM python:3.13-slim as builder
+FROM python:3.13-slim@sha256:eb43ff125d8d58d7449dcba7d336c23bcac412f526d861db493b9994d8010280 AS builder
 
 # Instalar uv para gestión rápida de paquetes (Versión fija)
 COPY --from=ghcr.io/astral-sh/uv:0.5.21 /uv /bin/uv
@@ -21,7 +21,7 @@ COPY . .
 RUN uv sync --frozen --no-dev
 
 # 2. Fase de Ejecución (Runner) - Imagen más ligera y segura
-FROM python:3.13-slim-bookworm
+FROM python:3.13-slim-bookworm@sha256:fcbd8dfc2605ba7c2eca646846c5e892b2931e41f6227985154a596f26ab8ed7
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
