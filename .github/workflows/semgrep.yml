@@ -8,12 +8,14 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   semgrep:
     name: Semgrep Custom Rules
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
 

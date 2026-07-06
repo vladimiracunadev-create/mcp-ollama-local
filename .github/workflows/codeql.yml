@@ -9,14 +9,16 @@ on:
     - cron: "25 4 * * 1"
 
 permissions:
-  actions: read
   contents: read
-  security-events: write
 
 jobs:
   analyze:
     name: CodeQL Analyze
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
 
