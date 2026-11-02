@@ -262,16 +262,19 @@ async def api_health(api_key: str = Depends(get_api_key)):
         ollama_detail = str(e)
 
     # MCP
-    mcp_ok = False
-    mcp_detail = ""
-    try:
+    # La sesion MCP se abre y cierra dentro de su propia task: el transporte
+    # stdio usa un task group y cerrarlo en la task de la request cancela los
+    # scopes del middleware ASGI.
+    async def _probe_mcp() -> tuple[bool, str]:
         stack, session = await open_mcp_session()
         try:
             await session.call_tool("system_info", {})
-            mcp_ok = True
-            mcp_detail = "system_info OK"
+            return True, "system_info OK"
         finally:
             await stack.aclose()
+
+    try:
+        mcp_ok, mcp_detail = await asyncio.create_task(_probe_mcp())
     except Exception as e:
         mcp_ok = False
         mcp_detail = str(e)
