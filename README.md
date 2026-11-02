@@ -256,9 +256,9 @@ La intención es mostrar evidencia acumulativa de mantenimiento y criterio técn
 ## 💬 Uso
 
 - `/` muestra estado básico de web, Ollama y MCP
-- `/chat` envía prompts al modelo
+- `/chat` envía prompts al modelo en una vista conversacional (burbujas user/assistant, indicador "procesando" y botón "Probar hola")
 - `/options` ejecuta tools MCP directamente
-- `/history` consulta el historial guardado en SQLite
+- `/history` consulta el historial guardado en SQLite, con filtros (rol, búsqueda, límite) y exportación a CSV
 
 Ejemplos:
 
@@ -266,6 +266,7 @@ Ejemplos:
 curl -sS http://127.0.0.1:8000/api/health
 curl -sS -X POST http://127.0.0.1:8000/api/mcp -H 'Content-Type: application/json' -d '{"tool":"system_info","args":{}}'
 curl -sS -X POST http://127.0.0.1:8000/api/chat -H 'Content-Type: application/json' -d '{"message":"hola"}'
+curl -sS 'http://127.0.0.1:8000/api/history.csv?limit=50&role=user' -o chat_history.csv
 ```
 
 Con API key obligatoria:

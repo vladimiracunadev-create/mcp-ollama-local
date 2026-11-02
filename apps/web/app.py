@@ -1,4 +1,6 @@
 import asyncio
+import csv
+import io
 import sqlite3
 import time
 from collections import defaultdict
@@ -9,7 +11,7 @@ import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request, Security
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
@@ -260,16 +262,19 @@ async def api_health(api_key: str = Depends(get_api_key)):
         ollama_detail = str(e)
 
     # MCP
-    mcp_ok = False
-    mcp_detail = ""
-    try:
+    # La sesion MCP se abre y cierra dentro de su propia task: el transporte
+    # stdio usa un task group y cerrarlo en la task de la request cancela los
+    # scopes del middleware ASGI.
+    async def _probe_mcp() -> tuple[bool, str]:
         stack, session = await open_mcp_session()
         try:
             await session.call_tool("system_info", {})
-            mcp_ok = True
-            mcp_detail = "system_info OK"
+            return True, "system_info OK"
         finally:
             await stack.aclose()
+
+    try:
+        mcp_ok, mcp_detail = await asyncio.create_task(_probe_mcp())
     except Exception as e:
         mcp_ok = False
         mcp_detail = str(e)
@@ -291,58 +296,106 @@ def history_page():
     return (TEMPL / "history.html").read_text(encoding="utf-8")
 
 
-@app.get("/api/history")
-def api_history(
-    limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)
-):
+def _read_history(limit: int, role: str, q: str):
     """
-    Devuelve historial del chat desde SQLite.
-    - limit: cantidad de filas (max recomendado 1000)
+    Lee historial del chat desde SQLite y devuelve (total, items).
+    - limit: cantidad de filas (10..1000)
     - role: 'user' o 'assistant' (opcional)
     - q: texto a buscar (opcional)
     """
     s = load_settings()
 
+    init_db(s.history_db)
+    with closing(sqlite3.connect(s.history_db)) as con:
+        con.row_factory = sqlite3.Row
+
+        total = con.execute("SELECT COUNT(*) AS c FROM chat").fetchone()["c"]
+
+        where = []
+        params = []
+
+        if role:
+            where.append("role = ?")
+            params.append(role)
+
+        if q:
+            where.append("content LIKE ?")
+            params.append(f"%{q}%")
+
+        limit = max(10, min(int(limit), 1000))
+
+        query_parts = ["SELECT id, ts, role, content FROM chat"]
+        if where:
+            query_parts.append("WHERE " + " AND ".join(where))
+        query_parts.append("ORDER BY id DESC LIMIT ?")
+
+        query = " ".join(query_parts)
+
+        rows = con.execute(query, (*params, limit)).fetchall()
+
+    items = [
+        {
+            "id": r["id"],
+            "ts": r["ts"],
+            "role": r["role"],
+            "content": r["content"],
+        }
+        for r in reversed(rows)
+    ]
+
+    return total, items
+
+
+@app.get("/api/history")
+def api_history(
+    limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)
+):
+    """Devuelve historial del chat desde SQLite en JSON."""
     try:
-        init_db(s.history_db)
-        with closing(sqlite3.connect(s.history_db)) as con:
-            con.row_factory = sqlite3.Row
-
-            total = con.execute("SELECT COUNT(*) AS c FROM chat").fetchone()["c"]
-
-            where = []
-            params = []
-
-            if role:
-                where.append("role = ?")
-                params.append(role)
-
-            if q:
-                where.append("content LIKE ?")
-                params.append(f"%{q}%")
-
-            limit = max(10, min(int(limit), 1000))
-
-            query_parts = ["SELECT id, ts, role, content FROM chat"]
-            if where:
-                query_parts.append("WHERE " + " AND ".join(where))
-            query_parts.append("ORDER BY id DESC LIMIT ?")
-
-            query = " ".join(query_parts)
-
-            rows = con.execute(query, (*params, limit)).fetchall()
-
-        items = [
-            {
-                "id": r["id"],
-                "ts": r["ts"],
-                "role": r["role"],
-                "content": r["content"],
-            }
-            for r in reversed(rows)
-        ]
-
+        total, items = _read_history(limit, role, q)
         return {"ok": True, "total": total, "items": items}
-
     except Exception:
         return {"ok": False, "error": "Could not read chat history."}
+
+
+def _csv_safe(value):
+    """Evita CSV injection: prefija un apostrofo si el texto abre con =,+,-,@."""
+    text = "" if value is None else str(value)
+    if text[:1] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + text
+    return text
+
+
+@app.get("/api/history.csv")
+def api_history_csv(
+    limit: int = 200, role: str = "", q: str = "", api_key: str = Depends(get_api_key)
+):
+    """Exporta el historial filtrado como CSV (mismos filtros que /api/history)."""
+    try:
+        _, items = _read_history(limit, role, q)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail="Could not read chat history."
+        ) from exc
+
+    buf = io.StringIO()
+    writer = csv.writer(buf, quoting=csv.QUOTE_ALL)
+    writer.writerow(["id", "ts", "role", "content"])
+    for it in items:
+        writer.writerow(
+            [
+                it["id"],
+                _csv_safe(it["ts"]),
+                _csv_safe(it["role"]),
+                _csv_safe(it["content"]),
+            ]
+        )
+    buf.seek(0)
+
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": 'attachment; filename="chat_history.csv"',
+        },
+    )
