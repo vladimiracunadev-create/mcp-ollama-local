@@ -1,3 +1,7 @@
+import csv
+import io
+import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -60,6 +64,61 @@ def test_api_history_empty():
     assert response.status_code == 200
     data = response.json()
     assert "ok" in data
+
+
+def test_api_history_csv_export(monkeypatch, tmp_path: Path):
+    """El export CSV devuelve cabecera, adjunto y una fila por mensaje."""
+    settings = make_settings(tmp_path)
+    monkeypatch.setattr(web_app, "load_settings", lambda: settings)
+
+    web_app.init_db(settings.history_db)
+    with closing(sqlite3.connect(settings.history_db)) as con:
+        con.execute(
+            "INSERT INTO chat (ts, role, content) VALUES (?, ?, ?)",
+            ("2026-01-01T00:00:00", "user", "hola"),
+        )
+        con.execute(
+            "INSERT INTO chat (ts, role, content) VALUES (?, ?, ?)",
+            ("2026-01-01T00:00:01", "assistant", "=CMD()"),
+        )
+        con.commit()
+
+    response = client.get("/api/history.csv?limit=10")
+
+    assert response.status_code == 200
+    assert "text/csv" in response.headers["content-type"]
+    assert "attachment" in response.headers["content-disposition"]
+
+    rows = list(csv.reader(io.StringIO(response.text)))
+    assert rows[0] == ["id", "ts", "role", "content"]
+    assert [r[2] for r in rows[1:]] == ["user", "assistant"]
+    assert rows[1][3] == "hola"
+    # CSV injection: el contenido que abre con "=" queda neutralizado
+    assert rows[2][3] == "'=CMD()"
+
+
+def test_api_history_csv_filters_by_role(monkeypatch, tmp_path: Path):
+    """El filtro de rol se aplica tambien al export CSV."""
+    settings = make_settings(tmp_path)
+    monkeypatch.setattr(web_app, "load_settings", lambda: settings)
+
+    web_app.init_db(settings.history_db)
+    with closing(sqlite3.connect(settings.history_db)) as con:
+        con.execute(
+            "INSERT INTO chat (ts, role, content) VALUES (?, ?, ?)",
+            ("2026-01-01T00:00:00", "user", "hola"),
+        )
+        con.execute(
+            "INSERT INTO chat (ts, role, content) VALUES (?, ?, ?)",
+            ("2026-01-01T00:00:01", "assistant", "que tal"),
+        )
+        con.commit()
+
+    response = client.get("/api/history.csv?limit=10&role=user")
+
+    rows = list(csv.reader(io.StringIO(response.text)))
+    assert len(rows) == 2
+    assert rows[1][2] == "user"
 
 
 def test_health_allows_anonymous_when_api_key_is_optional(monkeypatch, tmp_path: Path):

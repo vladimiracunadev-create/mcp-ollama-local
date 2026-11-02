@@ -10,6 +10,7 @@
     .card { background:#121a2b; border:1px solid #24314f; border-radius:14px; padding:18px; margin:14px 0; }
     input, select { border-radius:10px; border:1px solid #24314f; background:#0d1426; color:#e6e8ee; padding:10px; }
     button { background:#2b6cff; color:white; padding:10px 12px; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
+    button.secondary { background:#24314f; }
     a { color:#9bbcff; text-decoration:none; }
     .muted { color:#a9b2c7; }
     table { width:100%; border-collapse: collapse; }
@@ -50,6 +51,7 @@
         <input id="q" type="text" placeholder="texto..." />
 
         <button id="refresh">Actualizar</button>
+        <button id="export" class="secondary">Exportar CSV</button>
         <span id="stats" class="muted"></span>
       </div>
     </div>
@@ -66,16 +68,10 @@
     }
 
     async function load(){
-      const limit = document.getElementById('limit').value || 200;
-      const role = document.getElementById('role').value;
-      const q = document.getElementById('q').value;
       const out = document.getElementById('out');
       out.textContent = "Cargando...";
 
-      const params = new URLSearchParams();
-      params.set("limit", limit);
-      if(role) params.set("role", role);
-      if(q) params.set("q", q);
+      const params = currentParams();
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
@@ -136,7 +132,21 @@
       out.innerHTML = html;
     }
 
+    function currentParams(){
+      const params = new URLSearchParams();
+      params.set("limit", document.getElementById('limit').value || 200);
+      const role = document.getElementById('role').value;
+      const q = document.getElementById('q').value;
+      if(role) params.set("role", role);
+      if(q) params.set("q", q);
+      return params;
+    }
+
     document.getElementById('refresh').addEventListener('click', load);
+
+    document.getElementById('export').addEventListener('click', () => {
+      window.location.href = "/api/history.csv?" + currentParams().toString();
+    });
     load();
   </script>
 </body>
